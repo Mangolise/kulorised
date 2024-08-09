@@ -3,9 +3,12 @@ package org.krystilize.colorise;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Vec;
+import net.minestom.server.entity.GameMode;
+import net.minestom.server.entity.Player;
 import net.minestom.server.instance.Chunk;
 import net.minestom.server.instance.block.Block;
 
+import java.util.Set;
 import java.util.function.BiConsumer;
 
 public class Util {
@@ -35,4 +38,13 @@ public class Util {
     public static boolean isBlockColoredConcrete(Block block) {
         return concreteBlocks.contains(block.stateId());
     }
+
+    public static void setPlayerGamemode(Player player, GameMode gamemode) {
+        switch (gamemode) {
+            case CREATIVE -> player.setGameMode(GameMode.CREATIVE);
+            case ADVENTURE -> player.setGameMode(GameMode.ADVENTURE);
+        }
+    }
+
+    public static final Set<String> ADMINS = Set.of("Calcilore", "EclipsedMango", "Krystilize", "CoPokBl");
 }

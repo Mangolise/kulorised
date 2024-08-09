@@ -9,6 +9,7 @@ import net.minestom.server.event.GlobalEventHandler;
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
 import net.minestom.server.instance.*;
 import net.minestom.server.instance.palette.Palette;
+import org.krystilize.colorise.Commands.GameModeCommand;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -94,11 +95,13 @@ public class Server {
         globalEventHandler.addListener(AsyncPlayerConfigurationEvent.class, event -> {
             final Player player = event.getPlayer();
             event.setSpawningInstance(instanceContainer);
-            player.setRespawnPoint(new Pos(0, 42, 0));
+            player.setRespawnPoint(new Pos(0.5, 36, 0.5));
             player.setGameMode(GameMode.CREATIVE);
 
             player.getAttribute(Attribute.PLAYER_BLOCK_INTERACTION_RANGE).setBaseValue(100);
         });
+
+        MinecraftServer.getCommandManager().register(new GameModeCommand());
 
         // Start the server on port 25565
         minecraftServer.start("0.0.0.0", 25565);
