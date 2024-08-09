@@ -4,10 +4,10 @@ import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.GameMode;
 import net.minestom.server.entity.Player;
-import net.minestom.server.entity.attribute.Attribute;
 import net.minestom.server.event.GlobalEventHandler;
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
 import net.minestom.server.instance.*;
+import net.minestom.server.instance.anvil.AnvilLoader;
 import net.minestom.server.instance.palette.Palette;
 import org.krystilize.colorise.Commands.GameModeCommand;
 
@@ -26,12 +26,12 @@ public class Server {
 
         // Create the instance
         InstanceManager instanceManager = MinecraftServer.getInstanceManager();
-        InstanceContainer instanceContainer = instanceManager.createInstanceContainer();
+        InstanceContainer lobbyInstance = instanceManager.createInstanceContainer(new AnvilLoader("worlds/lobby"));
 
-        instanceContainer.setChunkSupplier(LightingChunk::new);
+        lobbyInstance.setChunkSupplier(LightingChunk::new);
 
         // for all regions
-        try (var dir = Files.newDirectoryStream(Path.of("world/region"))) {
+        try (var dir = Files.newDirectoryStream(Path.of("worlds/lobby/region"))) {
             for (Path regionName : dir) {
                 String coords = regionName.getFileName().toString().replace("r.", "").replace(".mca", "");
                 String[] split = coords.split("\\.");
@@ -49,7 +49,7 @@ public class Server {
 
                 for (int x = startX; x < endX; x += 16) {
                     for (int z = startZ; z < endZ; z += 16) {
-                        futures.add(instanceContainer.loadChunk(x / 16, z / 16).thenAccept(chunk -> {
+                        futures.add(lobbyInstance.loadChunk(x / 16, z / 16).thenAccept(chunk -> {
                             DynamicChunk dynamicChunk = (DynamicChunk) chunk;
 
                             boolean isChunkEmpty = true;
@@ -94,11 +94,9 @@ public class Server {
         GlobalEventHandler globalEventHandler = MinecraftServer.getGlobalEventHandler();
         globalEventHandler.addListener(AsyncPlayerConfigurationEvent.class, event -> {
             final Player player = event.getPlayer();
-            event.setSpawningInstance(instanceContainer);
+            event.setSpawningInstance(lobbyInstance);
             player.setRespawnPoint(new Pos(0.5, 36, 0.5));
-            player.setGameMode(GameMode.CREATIVE);
-
-            player.getAttribute(Attribute.PLAYER_BLOCK_INTERACTION_RANGE).setBaseValue(100);
+            Util.setPlayerGamemode(player, GameMode.ADVENTURE);
         });
 
         MinecraftServer.getCommandManager().register(new GameModeCommand());
