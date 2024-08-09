@@ -32,30 +32,12 @@ public class Main {
         // Create the instance
         InstanceManager instanceManager = MinecraftServer.getInstanceManager();
         InstanceContainer instanceContainer = instanceManager.createInstanceContainer();
-        DynamicRegistry<Biome> biomeRegistry = MinecraftServer.getBiomeRegistry();
 
-        List<Map.Entry<String, Biome>> biomes = ColorBiomes.generateColorBiomes();
-        List<DynamicRegistry.Key<Biome>> biomeKeys = biomes.stream()
-                .map(entry -> biomeRegistry.register(entry.getKey(), entry.getValue())).toList();
+//        DynamicRegistry<Biome> biomeRegistry = MinecraftServer.getBiomeRegistry();
+//        List<Map.Entry<String, Biome>> biomes = ColorBiomes.generateColorBiomes();
+//        List<DynamicRegistry.Key<Biome>> biomeKeys = biomes.stream()
+//                .map(entry -> biomeRegistry.register(entry.getKey(), entry.getValue())).toList();
 
-        // Set the ChunkGenerator
-        instanceContainer.setGenerator(unit -> {
-            unit.modifier().fillHeight(0, 40, Block.GRASS_BLOCK);
-
-            Point start = unit.absoluteStart();
-            Point end = unit.absoluteEnd();
-
-            ThreadLocalRandom random = ThreadLocalRandom.current();
-            for (int x = start.blockX(); x < end.blockX(); x += 4) {
-                for (int y = start.blockY(); y < end.blockY(); y += 4) {
-                    for (int z = start.blockZ(); z < end.blockZ(); z += 4) {
-                        // get random biome
-                        DynamicRegistry.Key<Biome> biomeKey = biomeKeys.get(random.nextInt(biomeKeys.size()));
-                        unit.modifier().setBiome(x, y, z, biomeKey);
-                    }
-                }
-            }
-        });
         instanceContainer.setChunkSupplier(LightingChunk::new);
 
         // Add an event callback to specify the spawning instance (and the spawn position)
@@ -66,18 +48,18 @@ public class Main {
             player.setRespawnPoint(new Pos(0, 42, 0));
             player.setGameMode(GameMode.CREATIVE);
 
-            try {
-                player.sendResourcePacks(ResourcePackRequest.resourcePackRequest()
-                        .packs(ResourcePackInfo.resourcePackInfo()
-                                .uri(new URI("http://100.80.15.64:8001"))
-                                .id(UUID.randomUUID())
-                                .hash(UUID.randomUUID().toString())
-                                .build())
-                        .required(true)
-                        .build());
-            } catch (URISyntaxException e) {
-                throw new RuntimeException(e);
-            }
+//            try {
+//                player.sendResourcePacks(ResourcePackRequest.resourcePackRequest()
+//                        .packs(ResourcePackInfo.resourcePackInfo()
+//                                .uri(new URI("http://100.80.15.64:8001"))
+//                                .id(UUID.randomUUID())
+//                                .hash(UUID.randomUUID().toString())
+//                                .build())
+//                        .required(true)
+//                        .build());
+//            } catch (URISyntaxException e) {
+//                throw new RuntimeException(e);
+//            }
 
             player.getAttribute(Attribute.PLAYER_BLOCK_INTERACTION_RANGE).setBaseValue(100);
         });
