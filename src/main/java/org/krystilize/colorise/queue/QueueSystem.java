@@ -14,6 +14,7 @@ import org.krystilize.colorise.game.GameInfo;
 import org.krystilize.colorise.game.Level0Instance;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 
@@ -24,9 +25,30 @@ public record QueueSystem(Instance lobby) {
     }
 
     private static final Tag<Queue<Player>> QUEUED_PLAYERS = Tag.<Queue<Player>>Transient("queued_players").defaultValue(new ArrayDeque<>());
+    private static final Tag<List<Player>> EXEMPT_PLAYERS = Tag.<List<Player>>Transient("exempt_players").defaultValue(new ArrayList<>());
     private static final Tag<InstanceContainer> LEVEL0_INSTANCE = Tag.Transient("level0_instance");
 
+    public boolean isQueued(Player player) {
+        return lobby.getTag(QUEUED_PLAYERS).contains(player);
+    }
+
+    public void setPlayerExempt(Player player, boolean exempt) {
+        lobby.updateTag(EXEMPT_PLAYERS, players -> {
+            players.remove(player);
+            if (exempt) {
+                players.add(player);
+            }
+            return players;
+        });
+    }
+
+    public boolean isExempt(Player player) {
+        return lobby.getTag(EXEMPT_PLAYERS).contains(player);
+    }
+
     public void addPlayer(Player player) {
+        if (isExempt(player)) return;
+
         Util.log(player.getUsername() + " joined the queue");
 
         // Add the player to the queue
