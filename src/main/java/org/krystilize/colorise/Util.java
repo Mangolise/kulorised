@@ -3,6 +3,8 @@ package org.krystilize.colorise;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.adventure.audience.Audiences;
+import net.minestom.server.command.CommandSender;
+import net.minestom.server.command.ConsoleSender;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.GameMode;
@@ -76,5 +78,21 @@ public class Util {
     public static void log(Object log) {
         String logString = log.toString();
         Audiences.all().sendMessage(Component.text(logString));
+    }
+
+    public static boolean lacksPermission(CommandSender sender) {
+        if (sender instanceof ConsoleSender) {
+            return false;
+        }
+
+        if (sender instanceof Player p) {
+            if (!Util.ADMINS.contains(p.getUsername())) {  // bad
+                p.sendMessage("You do not have permission.");
+                return true;
+            }
+            return false;
+        }
+
+        return true;
     }
 }
