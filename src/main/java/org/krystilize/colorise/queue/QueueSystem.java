@@ -1,11 +1,13 @@
 package org.krystilize.colorise.queue;
 
+import net.kyori.adventure.sound.Sound;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.instance.InstanceTickEvent;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.anvil.AnvilLoader;
+import net.minestom.server.sound.SoundEvent;
 import net.minestom.server.tag.Tag;
 import org.krystilize.colorise.Util;
 import org.krystilize.colorise.game.GameInfo;
@@ -35,6 +37,16 @@ public record QueueSystem(Instance lobby) {
         });
     }
 
+    public void removePlayer(Player player) {
+        Util.log(player.getUsername() + " left the queue");
+
+        // Add the player to the queue
+        lobby.updateTag(QUEUED_PLAYERS, players -> {
+            players.remove(player);
+            return players;
+        });
+    }
+
     public void updateQueue() {
         Queue<Player> players = lobby.getTag(QUEUED_PLAYERS);
         synchronized (this) {
@@ -45,6 +57,11 @@ public record QueueSystem(Instance lobby) {
 
             Player p1 = players.remove();
             Player p2 = players.remove();
+
+            // Play sounds
+            Sound startSound = Sound.sound(b -> b.type(SoundEvent.ENTITY_PLAYER_LEVELUP));
+            p1.playSound(startSound);
+            p2.playSound(startSound);
 
             Util.log("Starting game with " + p1.getUsername() + " and " + p2.getUsername());
 
