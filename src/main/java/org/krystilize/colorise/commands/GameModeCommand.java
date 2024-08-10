@@ -4,6 +4,8 @@ import net.minestom.server.command.CommandSender;
 import net.minestom.server.command.builder.Command;
 import net.minestom.server.command.builder.CommandContext;
 import net.minestom.server.command.builder.arguments.ArgumentEnum;
+import static net.minestom.server.command.builder.arguments.ArgumentType.*;
+import static org.krystilize.colorise.Util.lacksPermission;
 import net.minestom.server.entity.GameMode;
 import net.minestom.server.entity.Player;
 import org.krystilize.colorise.Util;
@@ -21,6 +23,8 @@ public class GameModeCommand extends Command {
     }
 
     private void executeNoArgs(CommandSender sender, CommandContext context) {
+        if (lacksPermission(sender)) return;
+
         switch (context.getInput()) {
             case "gms", "gma" -> execute(sender, GameMode.ADVENTURE);
             case "gmc" -> execute(sender, GameMode.CREATIVE);
@@ -29,6 +33,8 @@ public class GameModeCommand extends Command {
     }
 
     private void executeArgs(CommandSender sender, CommandContext context) {
+        if (lacksPermission(sender)) return;
+
         GameMode gamemode = context.get("gamemode");
         if (!(sender instanceof Player player)) return;
 
@@ -40,6 +46,8 @@ public class GameModeCommand extends Command {
     }
 
     private void execute(CommandSender sender, GameMode gamemode) {
+        if (lacksPermission(sender)) return;
+
         if (gamemode == GameMode.SURVIVAL) {
             gamemode = GameMode.ADVENTURE;
         }

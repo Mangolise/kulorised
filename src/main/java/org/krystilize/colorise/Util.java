@@ -3,6 +3,8 @@ package org.krystilize.colorise;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.adventure.audience.Audiences;
+import net.minestom.server.command.CommandSender;
+import net.minestom.server.command.ConsoleSender;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.GameMode;
@@ -10,7 +12,10 @@ import net.minestom.server.entity.Player;
 import net.minestom.server.entity.attribute.Attribute;
 import net.minestom.server.instance.Chunk;
 import net.minestom.server.instance.block.Block;
+import net.minestom.server.scoreboard.Team;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
@@ -68,9 +73,26 @@ public class Util {
     }
 
     public static final Set<String> ADMINS = Set.of("Calcilore", "EclipsedMango", "Krystilize", "CoPokBl");
+    public static final Map<Color, Team> COLOR_TEAMS = new HashMap<>();
 
     public static void log(Object log) {
         String logString = log.toString();
         Audiences.all().sendMessage(Component.text(logString));
+    }
+
+    public static boolean lacksPermission(CommandSender sender) {
+        if (sender instanceof ConsoleSender) {
+            return false;
+        }
+
+        if (sender instanceof Player p) {
+            if (!Util.ADMINS.contains(p.getUsername())) {  // bad
+                p.sendMessage("You do not have permission.");
+                return true;
+            }
+            return false;
+        }
+
+        return true;
     }
 }
