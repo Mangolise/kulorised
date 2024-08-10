@@ -2,11 +2,11 @@ package org.krystilize.colorise;
 
 import net.kyori.adventure.text.Component;
 import net.minestom.server.MinecraftServer;
-import net.minestom.server.adventure.audience.Audiences;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.GameMode;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.GlobalEventHandler;
+import net.minestom.server.event.item.ItemDropEvent;
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
 import net.minestom.server.event.player.PlayerSpawnEvent;
 import net.minestom.server.instance.*;
@@ -18,8 +18,6 @@ import org.krystilize.colorise.game.ColoredBlocks;
 import org.krystilize.colorise.game.ColoriseGame;
 
 import java.nio.file.Path;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 public class Server {
 
@@ -65,6 +63,8 @@ public class Server {
                 player.getInventory().setItemStack(i, itemStack);
             }
         });
+
+        globalEventHandler.addListener(ItemDropEvent.class, event -> event.setCancelled(true));
 
         MinecraftServer.getCommandManager().register(new GameModeCommand());
 
