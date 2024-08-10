@@ -1,6 +1,8 @@
 package org.krystilize.colorise;
 
+import net.kyori.adventure.text.Component;
 import net.minestom.server.MinecraftServer;
+import net.minestom.server.adventure.audience.Audiences;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.GameMode;
 import net.minestom.server.entity.Player;
@@ -8,15 +10,14 @@ import net.minestom.server.event.GlobalEventHandler;
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
 import net.minestom.server.instance.*;
 import net.minestom.server.instance.anvil.AnvilLoader;
-import net.minestom.server.instance.palette.Palette;
-import org.krystilize.colorise.Commands.GameModeCommand;
+import org.krystilize.colorise.commands.GameModeCommand;
+import org.krystilize.colorise.colors.InstanceAnalysis;
+import org.krystilize.colorise.game.ColoredBlocks;
+import org.krystilize.colorise.game.ColoriseGame;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class Server {
 
@@ -27,77 +28,58 @@ public class Server {
         // Create the instance
         InstanceManager instanceManager = MinecraftServer.getInstanceManager();
         InstanceContainer lobbyInstance = instanceManager.createInstanceContainer(new AnvilLoader("worlds/lobby"));
-
         lobbyInstance.setChunkSupplier(LightingChunk::new);
 
-        // for all regions
-        try (var dir = Files.newDirectoryStream(Path.of("worlds/lobby/region"))) {
-            for (Path regionName : dir) {
-                String coords = regionName.getFileName().toString().replace("r.", "").replace(".mca", "");
-                String[] split = coords.split("\\.");
-                int regionX = Integer.parseInt(split[0]);
-                int regionZ = Integer.parseInt(split[1]);
+        InstanceContainer level0Instance = instanceManager.createInstanceContainer(new AnvilLoader("worlds/level0"));
+        ColoredBlocks coloredBlocks = InstanceAnalysis.scanForColoredBlocks(level0Instance, Path.of("worlds/level0/region"));
+        ColoriseGame game = new ColoriseGame(level0Instance, coloredBlocks);
+        game.start();
+        System.out.println(game);
 
-                // load all chunks in these regions (512 x 512 blocks)
-                int startX = regionX * 512;
-                int startZ = regionZ * 512;
-                int endX = startX + 512;
-                int endZ = startZ + 512;
+        var executor = Executors.newSingleThreadScheduledExecutor();
 
-                long startTime = System.currentTimeMillis();
-                List<CompletableFuture<?>> futures = new ArrayList<>();
-
-                for (int x = startX; x < endX; x += 16) {
-                    for (int z = startZ; z < endZ; z += 16) {
-                        futures.add(lobbyInstance.loadChunk(x / 16, z / 16).thenAccept(chunk -> {
-                            DynamicChunk dynamicChunk = (DynamicChunk) chunk;
-
-                            boolean isChunkEmpty = true;
-                            for (Section section : dynamicChunk.getSections()) {
-                                Palette blockPalette = section.blockPalette();
-                                if (blockPalette.count() > 1) {
-                                    isChunkEmpty = false;
-                                    break;
-                                }
-
-                                if (blockPalette.count() == 1 && blockPalette.get(0, 0, 0) != 0){
-                                    isChunkEmpty = false;
-                                    break;
-                                }
-                            }
-
-                            if (isChunkEmpty) {
-                                return;
-                            }
-
-                            Util.forEachNonAirBlockInChunk(chunk, (point, block) -> {
-                                if (!Util.isBlockColoredConcrete(block)) {
-                                    return;
-                                }
-                                System.out.println("Block at " + point + " is " + block.name());
-                            });
-                        }));
+        executor.scheduleAtFixedRate(() -> {
+            for (boolean enabled : new boolean[]{true, false}) {
+                System.out.println("Enabled: " + enabled);
+                for (Color color : Color.values()) {
+                    System.out.println("Color: " + color);
+                    for (Player player : MinecraftServer.getConnectionManager().getOnlinePlayers()) {
+                        System.out.println("Player: " + player.getUsername());
+                        Audiences.all().sendMessage(Component.text("Setting " + player.getUsername() + " to " + color + " " + enabled + "!"));
+                        coloredBlocks.setColor(enabled, player, color);
+                    }
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
                     }
                 }
-
-                CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
-
-                long endTime = System.currentTimeMillis();
-
-                System.out.println("Loaded region " + regionX + " " + regionZ + " in " + (endTime - startTime) + "ms");
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        }, 0, 1, TimeUnit.MILLISECONDS);
 
         // Add an event callback to specify the spawning instance (and the spawn position)
         GlobalEventHandler globalEventHandler = MinecraftServer.getGlobalEventHandler();
         globalEventHandler.addListener(AsyncPlayerConfigurationEvent.class, event -> {
             final Player player = event.getPlayer();
-            event.setSpawningInstance(lobbyInstance);
+            event.setSpawningInstance(level0Instance);
             player.setRespawnPoint(new Pos(0.5, 36, 0.5));
             Util.setPlayerGamemode(player, GameMode.ADVENTURE);
+
+            if (Util.ADMINS.contains(player.getUsername())) {
+                player.setPermissionLevel(4);
+            }
         });
+
+//        globalEventHandler.addListener(PlayerPacketOutEvent.class, event -> {
+//            ServerPacket packet = event.getPacket();
+//            switch (packet) {
+//                case RegistryDataPacket registryDataPacket -> {}
+//                case ChunkDataPacket chunkDataPacket -> {}
+//                default -> {
+//                    System.out.println(event.getPacket());
+//                }
+//            }
+//        });
 
         MinecraftServer.getCommandManager().register(new GameModeCommand());
 

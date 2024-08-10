@@ -32,6 +32,7 @@ public class Util {
                     .filter(block -> block.name().endsWith("concrete"))
                     .filter(block -> !block.name().contains("white"))
                     .filter(block -> !block.name().contains("gray"))
+                    .filter(block -> !block.name().contains("black"))
                     .mapToInt(Block::stateId)
                     .toArray()
     );
