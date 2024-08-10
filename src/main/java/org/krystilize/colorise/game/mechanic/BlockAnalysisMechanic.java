@@ -23,9 +23,18 @@ public class BlockAnalysisMechanic implements Mechanic {
         return Collections.unmodifiableMap(coloredBlocks);
     }
 
+    private Map<Point, Color> windowPanes = null;
+    public Map<Point, Color> getWindowPanes() {
+        if (windowPanes == null) {
+            throw new IllegalStateException("Cannot get window panes before setup");
+        }
+        return Collections.unmodifiableMap(windowPanes);
+    }
+
 
     @Override
     public void setup(Context context) {
         coloredBlocks = InstanceAnalysis.scanForColoredBlocks(context.instance(), pathToRegions);
+        windowPanes = InstanceAnalysis.scanForWindowPanes(context.instance(), pathToRegions);
     }
 }

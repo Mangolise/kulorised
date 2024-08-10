@@ -31,10 +31,10 @@ public enum Color {
 
     public static Color fromBlockName(String blockName) {
         return switch (blockName) {
-            case "minecraft:yellow_wool" -> YELLOW;
-            case "minecraft:green_wool" -> GREEN;
-            case "minecraft:red_wool" -> RED;
-            case "minecraft:blue_wool" -> BLUE;
+            case "minecraft:yellow_wool", "minecraft:yellow_stained_glass_pane" -> YELLOW;
+            case "minecraft:green_wool", "minecraft:green_stained_glass_pane" -> GREEN;
+            case "minecraft:red_wool", "minecraft:red_stained_glass_pane" -> RED;
+            case "minecraft:blue_wool", "minecraft:blue_stained_glass_pane" -> BLUE;
             default -> throw new IllegalArgumentException("Unknown block name: " + blockName);
         };
     }

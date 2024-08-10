@@ -2,7 +2,6 @@ package org.krystilize.colorise;
 
 import it.unimi.dsi.fastutil.ints.IntSet;
 import net.kyori.adventure.text.Component;
-import net.minestom.server.MinecraftServer;
 import net.minestom.server.adventure.audience.Audiences;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Vec;
@@ -11,12 +10,8 @@ import net.minestom.server.entity.Player;
 import net.minestom.server.entity.attribute.Attribute;
 import net.minestom.server.instance.Chunk;
 import net.minestom.server.instance.block.Block;
-import org.krystilize.colorise.game.mechanic.ColoredBlockManagerMechanic;
 
 import java.util.Set;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 
 public class Util {
@@ -48,6 +43,14 @@ public class Util {
         return coloredBlocks.contains(block.stateId());
     }
 
+    public static boolean isWindowPane(Block block) {
+        return block.name().endsWith("_pane") &&
+                block.name().contains("stained_glass") &&
+                !block.name().contains("black") &&
+                !block.name().contains("white") &&
+                !block.name().contains("gray");
+    }
+
     public static void setPlayerGamemode(Player player, GameMode gamemode) {
         switch (gamemode) {
             case CREATIVE -> {
@@ -65,30 +68,6 @@ public class Util {
     }
 
     public static final Set<String> ADMINS = Set.of("Calcilore", "EclipsedMango", "Krystilize", "CoPokBl");
-
-    /**
-     * This debug util method slowly rotates throughout all colors for all players in the instance
-     */
-    public static void DEBUG_slowlySwapColors(ColoredBlockManagerMechanic blocks) {
-        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-
-        executor.scheduleAtFixedRate(() -> {
-            for (boolean enabled : new boolean[]{true, false}) {
-                for (Color color : Color.values()) {
-                    for (Player player : MinecraftServer.getConnectionManager().getOnlinePlayers()) {
-
-                        Util.log("Setting " + player.getUsername() + " to " + color + " " + enabled + "!");
-                        blocks.setColor(enabled, player, color).join();
-                    }
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-        }, 0, 1, TimeUnit.MILLISECONDS);
-    }
 
     public static void log(Object log) {
         String logString = log.toString();

@@ -10,6 +10,7 @@ import net.minestom.server.tag.Tag;
 import org.jetbrains.annotations.UnknownNullability;
 import org.krystilize.colorise.Color;
 import org.krystilize.colorise.Util;
+import org.krystilize.colorise.colors.ColorChangeEvent;
 import org.krystilize.colorise.entity.BlockOutlineDisplayEntity;
 
 import java.util.HashSet;
@@ -46,6 +47,20 @@ public class ColoredBlockManagerMechanic implements Mechanic {
         });
 
         instance.setTag(INSTANCE_DISPLAY_ENTITIES, displayEntities);
+
+        context.events().addListener(ColorChangeEvent.class, event -> {
+
+            // TODO: Remove the two player assumption
+            // We assume there are only two players in the instance
+            Player other = instance.getPlayers().stream()
+                    .filter(player -> !player.equals(event.getPlayer()))
+                    .findFirst()
+                    .orElseThrow();
+
+            for (Color color : Color.values()) {
+                this.setColor(color == event.getColor(), other, color);
+            }
+        });
     }
 
     private static final Tag<Map<Point, BlockOutlineDisplayEntity>> INSTANCE_DISPLAY_ENTITIES = Tag.<Map<Point, BlockOutlineDisplayEntity>>Transient("display_entities")
@@ -62,7 +77,7 @@ public class ColoredBlockManagerMechanic implements Mechanic {
         }
     }
 
-    public CompletableFuture<Void> setColor(boolean enabled, Player player, Color color) {;
+    private CompletableFuture<Void> setColor(boolean enabled, Player player, Color color) {;
         return CompletableFuture.runAsync(() -> {
             Util.log("Setting color " + color + " to " + enabled + " for " + player.getUsername() + ".");
 

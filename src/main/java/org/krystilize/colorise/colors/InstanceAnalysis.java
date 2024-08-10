@@ -4,6 +4,7 @@ import net.minestom.server.coordinate.Point;
 import net.minestom.server.instance.DynamicChunk;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.Section;
+import net.minestom.server.instance.block.Block;
 import net.minestom.server.instance.palette.Palette;
 import org.krystilize.colorise.Color;
 import org.krystilize.colorise.Util;
@@ -11,17 +12,51 @@ import org.krystilize.colorise.Util;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
 
 public class InstanceAnalysis {
 
     public static Map<Point, Color> scanForColoredBlocks(Instance instance, Path pathToRegions) {
-        Map<Point, String> blocks = new ConcurrentHashMap<>();
+        Map<Point, Block> blocks = scanForBlocks(instance, pathToRegions, Util::isColoredBlock);
+
+        Map<Point, Color> colors = new HashMap<>();
+
+        blocks.forEach((point, block) -> {
+            Color color = Color.fromBlockName(block.name());
+            colors.put(point, color);
+        });
+
+        return Map.copyOf(colors);
+    }
+
+    public static Map<Point, Color> scanForWindowPanes(Instance instance, Path pathToRegions) {
+        Map<Point, Block> blocks = scanForBlocks(instance, pathToRegions, Util::isWindowPane);
+
+        Map<Point, Color> colors = new HashMap<>();
+
+        blocks.forEach((point, block) -> {
+            Color color = Color.fromBlockName(block.name());
+            colors.put(point, color);
+        });
+
+        return Map.copyOf(colors);
+    }
+
+
+    /**
+     * Scans for blocks matching the given predicate.
+     * <p>
+     *     Note that this method will not scan for air blocks.
+     * @param instance the instance to scan
+     * @param pathToRegions the path to the regions
+     * @param blockPredicate the predicate to match
+     * @return a map of points to blocks
+     */
+    public static Map<Point, Block> scanForBlocks(Instance instance, Path pathToRegions, Predicate<Block> blockPredicate) {
+        Map<Point, Block> blocks = new ConcurrentHashMap<>();
 
         // for all regions
         try (var dir = Files.newDirectoryStream(pathToRegions)) {
@@ -65,10 +100,10 @@ public class InstanceAnalysis {
                             }
 
                             Util.forEachNonAirBlockInChunk(chunk, (point, block) -> {
-                                if (!Util.isColoredBlock(block)) {
+                                if (!blockPredicate.test(block)) {
                                     return;
                                 }
-                                blocks.put(point, block.name());
+                                blocks.put(point, block);
                             });
                         }));
                     }
@@ -84,13 +119,6 @@ public class InstanceAnalysis {
             throw new RuntimeException(e);
         }
 
-        Map<Point, Color> colors = new HashMap<>();
-
-        blocks.forEach((point, blockName) -> {
-            Color color = Color.fromBlockName(blockName);
-            colors.put(point, color);
-        });
-
-        return Map.copyOf(colors);
+        return Map.copyOf(blocks);
     }
 }

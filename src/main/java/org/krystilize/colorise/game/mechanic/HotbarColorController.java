@@ -1,6 +1,7 @@
 package org.krystilize.colorise.game.mechanic;
 
 import net.minestom.server.entity.Player;
+import net.minestom.server.event.EventDispatcher;
 import net.minestom.server.event.player.PlayerPacketEvent;
 import net.minestom.server.event.player.PlayerSpawnEvent;
 import net.minestom.server.item.ItemStack;
@@ -9,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 import org.krystilize.colorise.Color;
 import org.krystilize.colorise.Util;
+import org.krystilize.colorise.colors.ColorChangeEvent;
 import org.krystilize.colorise.game.ColoriseGame;
 import org.krystilize.colorise.game.GameInstance;
 
@@ -28,9 +30,7 @@ public class HotbarColorController implements Mechanic {
 
         context.events().addListener(PlayerSpawnEvent.class, event -> {
             Player player = event.getPlayer();
-            for (Color color : Color.values()) {
-                coloredBlockManager.setColor(false, player, color);
-            }
+            this.updateHotbar(player);
         });
 
         // we need to update the player's hotbar whenever they spawn
@@ -55,19 +55,16 @@ public class HotbarColorController implements Mechanic {
             Util.log("Changing color from " + previousColor + " to " + newColor + " for " + player.getUsername() + ".");
 
             instance.scheduleNextTick(ignored -> {
-                // TODO: Remove the assumption that we only have two players
-                Player other = game.players().stream().filter(p -> p != player).findAny().orElseThrow();
-                this.updateHotbar(game, player, other);
+                this.updateHotbar(player);
             });
         });
     }
 
-    public void updateHotbar(ColoriseGame game, Player player, Player target) {
+    public void updateHotbar(Player player) {
         ItemStack heldItem = player.getInventory().getItemStack(player.getHeldSlot());
         @Nullable Color heldColor = Color.fromMaterial(heldItem.material());
 
-        for (Color color : Color.values()) {
-            coloredBlockManager.setColor(color == heldColor, target, color);
-        }
+        ColorChangeEvent event = new ColorChangeEvent(heldColor, player);
+        EventDispatcher.call(event);
     }
 }
