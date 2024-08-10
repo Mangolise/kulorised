@@ -11,20 +11,23 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public enum Color {
-    BLUE(0x0000FF, Block.BLUE_CONCRETE, Material.LIGHT_BLUE_CONCRETE),
-    RED(0xFF0000, Block.RED_CONCRETE, Material.RED_CONCRETE),
-    GREEN(0x00FF00, Block.GREEN_CONCRETE, Material.LIME_CONCRETE),
-    YELLOW(0xFFFF00, Block.YELLOW_CONCRETE, Material.YELLOW_CONCRETE)
+    BLUE(0x0000FF, Block.BLUE_CONCRETE, Material.LIGHT_BLUE_CONCRETE, Block.BLUE_STAINED_GLASS),
+    RED(0xFF0000, Block.RED_CONCRETE, Material.RED_CONCRETE, Block.RED_STAINED_GLASS),
+    GREEN(0x00FF00, Block.GREEN_CONCRETE, Material.LIME_CONCRETE, Block.GREEN_STAINED_GLASS),
+    YELLOW(0xFFFF00, Block.YELLOW_CONCRETE, Material.YELLOW_CONCRETE, Block.YELLOW_STAINED_GLASS)
     ;
 
 
     private final int color;
     private final Block block;
     private final Material material;
-    Color(int color, Block block, Material material) {
+    private final Block glassBlock;
+
+    Color(int color, Block block, Material material, Block glassBlock) {
         this.color = color;
         this.block = block;
         this.material = material;
+        this.glassBlock = glassBlock;
     }
 
     public static Color fromBlockName(String blockName) {
@@ -54,4 +57,6 @@ public enum Color {
     public Material material() {
         return material;
     }
+
+    public Block glassBlock() { return glassBlock; }
 }

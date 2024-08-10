@@ -59,7 +59,7 @@ public class Server {
             for (int i = 0; i < Color.values().length; i++) {
                 Color color = Color.values()[i];
                 ItemStack itemStack = ItemStack.of(color.material());
-                itemStack = itemStack.withCustomName(Component.text(color.name()));
+                itemStack = itemStack.withCustomName(Component.text("§f" + color.name()));
                 player.getInventory().setItemStack(i, itemStack);
             }
         });
