@@ -27,10 +27,11 @@ public class HotbarColorController implements Mechanic {
         GameInstance instance = context.instance();
         coloredBlockManager = context.mechanic(ColoredBlockManagerMechanic.class);
 
-
         context.events().addListener(PlayerSpawnEvent.class, event -> {
             Player player = event.getPlayer();
-            this.updateHotbar(player);
+            event.getInstance().scheduleNextTick(ignored -> {
+                this.updateHotbar(player);
+            });
         });
 
         // we need to update the player's hotbar whenever they spawn
