@@ -1,5 +1,6 @@
 package org.krystilize.colorise;
 
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.minestom.server.MinecraftServer;
@@ -7,6 +8,7 @@ import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.GameMode;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.GlobalEventHandler;
+import net.minestom.server.event.entity.EntityAttackEvent;
 import net.minestom.server.event.item.ItemDropEvent;
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
 import net.minestom.server.event.player.PlayerDisconnectEvent;
@@ -17,6 +19,7 @@ import net.minestom.server.instance.LightingChunk;
 import net.minestom.server.instance.anvil.AnvilLoader;
 import net.minestom.server.scoreboard.Team;
 import net.minestom.server.scoreboard.TeamManager;
+import net.minestom.server.sound.SoundEvent;
 import org.krystilize.colorise.commands.GameModeCommand;
 import org.krystilize.colorise.queue.QueueSystem;
 
@@ -72,6 +75,13 @@ public class Server {
         globalEventHandler.addListener(PlayerDisconnectEvent.class, event -> queueSystem.removePlayer(event.getPlayer()));
 
         globalEventHandler.addListener(ItemDropEvent.class, event -> event.setCancelled(true));
+
+        Sound sound = Sound.sound(b -> b.type(SoundEvent.ENTITY_PLAYER_ATTACK_NODAMAGE));
+        globalEventHandler.addListener(EntityAttackEvent.class, event -> {
+            if (event.getEntity() instanceof Player p) {
+                p.playSound(sound);
+            }
+        });
 
         MinecraftServer.getCommandManager().register(new GameModeCommand());
 
