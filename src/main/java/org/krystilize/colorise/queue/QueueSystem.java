@@ -57,6 +57,9 @@ public record QueueSystem(Instance lobby) {
             players.add(player);
             return players;
         });
+
+        // Reset their pos
+        player.teleport(player.getRespawnPoint());
     }
 
     public void removePlayer(Player player) {
