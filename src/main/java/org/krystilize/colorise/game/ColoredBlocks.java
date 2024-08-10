@@ -1,5 +1,6 @@
 package org.krystilize.colorise.game;
 
+import net.minestom.server.adventure.audience.Audiences;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.Player;
@@ -8,84 +9,86 @@ import net.minestom.server.instance.block.Block;
 import net.minestom.server.network.packet.server.play.BlockChangePacket;
 import net.minestom.server.tag.Tag;
 import org.krystilize.colorise.Color;
+import org.krystilize.colorise.Util;
 import org.krystilize.colorise.entity.BlockOutlineDisplayEntity;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 public record ColoredBlocks(Instance instance, Map<Point, Color> blocks) {
 
-    private static final Tag<Map<Point, Entity>> PLAYER_DISPLAY_ENTITIES = Tag.<Map<Point, Entity>>Transient("display_entities")
+    public ColoredBlocks {
+        Util.log("ColoredBlocks created with " + blocks.size() + " blocks.");
+        Map<Point, BlockOutlineDisplayEntity> displayEntities = instance.getTag(INSTANCE_DISPLAY_ENTITIES);
+
+        for (var entry : blocks.entrySet()) {
+            BlockOutlineDisplayEntity entity = new BlockOutlineDisplayEntity(entry.getValue());
+            entity.updateViewableRule(viewer -> viewer.getTag(PLAYER_SELECTED_COLORS).contains(entry.getValue()));
+            entity.setInstance(instance, entry.getKey());
+            displayEntities.put(entry.getKey(), entity);
+        }
+
+        instance.setTag(INSTANCE_DISPLAY_ENTITIES, displayEntities);
+    }
+
+    private static final Tag<Map<Point, BlockOutlineDisplayEntity>> INSTANCE_DISPLAY_ENTITIES = Tag.<Map<Point, BlockOutlineDisplayEntity>>Transient("display_entities")
             .defaultValue(ConcurrentHashMap::new);
 
     private static final Tag<Set<Color>> PLAYER_SELECTED_COLORS = Tag.<Set<Color>>Transient("selected_colors")
             .defaultValue(ConcurrentHashMap::newKeySet);
 
-    public CompletableFuture<Void> setColor(boolean enabled, Player player, Color color) {
+    private static ExecutorService executor = Executors.newSingleThreadExecutor();
 
-        // Get all block positions of the specified color
-        Set<Point> points = blocks.entrySet().stream()
-                .filter(entry -> entry.getValue().equals(color))
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toUnmodifiableSet());
+    private void updateEntities() {
+        for (BlockOutlineDisplayEntity blockOutlineDisplayEntity : instance.getTag(INSTANCE_DISPLAY_ENTITIES).values()) {
+            blockOutlineDisplayEntity.updateViewableRule();
+        }
+    }
 
-        Map<Point, Entity> outlineEntities = player.getTag(PLAYER_DISPLAY_ENTITIES);
-        Set<Color> selectedColors = player.getTag(PLAYER_SELECTED_COLORS);
+    public CompletableFuture<Void> setColor(boolean enabled, Player player, Color color) {;
+        return CompletableFuture.runAsync(() -> {
+//            Util.log("Setting color " + color + " to " + enabled + " for " + player.getUsername() + ".");
 
-        if (enabled) {
-            // Set the blocks
-            Set<BlockChangePacket> packets = new HashSet<>();
-            for (Point point : points) {
-                packets.add(new BlockChangePacket(point, color.block().stateId()));
-            }
-            player.sendPackets(packets.toArray(BlockChangePacket[]::new));
+            // Get all block positions of the specified color
+            Set<Point> points = blocks.entrySet().stream()
+                    .filter(entry -> entry.getValue().equals(color))
+                    .map(Map.Entry::getKey)
+                    .collect(Collectors.toUnmodifiableSet());
 
-            // despawn all entities that are in the set
-            for (Point point : points) {
-                Entity entity = outlineEntities.get(point);
-                if (entity != null) {
-                    entity.removeViewer(player);
-                    entity.remove();
-                    outlineEntities.remove(point);
+            Map<Point, BlockOutlineDisplayEntity> instanceDisplayEntities = instance.getTag(INSTANCE_DISPLAY_ENTITIES);
+            Set<Color> selectedColors = player.getTag(PLAYER_SELECTED_COLORS);
+
+            if (enabled) {
+                // Set the blocks
+                Set<BlockChangePacket> packets = new HashSet<>();
+                for (Point point : points) {
+                    packets.add(new BlockChangePacket(point, color.block().stateId()));
                 }
-            }
+                player.sendPackets(packets.toArray(BlockChangePacket[]::new));
 
-            // remove the color from the set
-            selectedColors.remove(color);
+                // remove the color from the set
+                selectedColors.remove(color);
+            } else {
 
-            player.setTag(PLAYER_DISPLAY_ENTITIES, outlineEntities);
-            player.setTag(PLAYER_SELECTED_COLORS, selectedColors);
-
-            return CompletableFuture.completedFuture(null);
-        } else {
-
-            // spawn all entities that are in the set
-            List<CompletableFuture<?>> spawningFutures = new ArrayList<>();
-            for (Point point : points) {
-                Entity entity = new BlockOutlineDisplayEntity(color);
-
-                // Make it so that only this player can see this entity
-                entity.setAutoViewable(false);
-                spawningFutures.add(entity.setInstance(instance, point).thenRun(() -> entity.addViewer(player)));
-                outlineEntities.put(point, entity);
-            }
-
-            // Remove the blocks after all entities have been spawned
-            return CompletableFuture.allOf(spawningFutures.toArray(CompletableFuture[]::new)).thenRun(() -> {
+                // Remove the blocks
                 Set<BlockChangePacket> packets = new HashSet<>();
                 for (Point point : points) {
                     packets.add(new BlockChangePacket(point, Block.AIR.stateId()));
                 }
                 player.sendPackets(packets.toArray(BlockChangePacket[]::new));
-            }).thenRun(() -> {
+
                 // remove the color from the set
                 selectedColors.add(color);
+            }
 
-                player.setTag(PLAYER_DISPLAY_ENTITIES, outlineEntities);
-                player.setTag(PLAYER_SELECTED_COLORS, selectedColors);
-            });
-        }
+            player.setTag(PLAYER_SELECTED_COLORS, selectedColors);
+
+            // update entities
+            updateEntities();
+        }, executor);
     }
 }

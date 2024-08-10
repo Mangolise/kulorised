@@ -8,8 +8,10 @@ import net.minestom.server.entity.GameMode;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.GlobalEventHandler;
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
+import net.minestom.server.event.player.PlayerSpawnEvent;
 import net.minestom.server.instance.*;
 import net.minestom.server.instance.anvil.AnvilLoader;
+import net.minestom.server.item.ItemStack;
 import org.krystilize.colorise.commands.GameModeCommand;
 import org.krystilize.colorise.colors.InstanceAnalysis;
 import org.krystilize.colorise.game.ColoredBlocks;
@@ -51,16 +53,18 @@ public class Server {
             }
         });
 
-//        globalEventHandler.addListener(PlayerPacketOutEvent.class, event -> {
-//            ServerPacket packet = event.getPacket();
-//            switch (packet) {
-//                case RegistryDataPacket registryDataPacket -> {}
-//                case ChunkDataPacket chunkDataPacket -> {}
-//                default -> {
-//                    System.out.println(event.getPacket());
-//                }
-//            }
-//        });
+        globalEventHandler.addListener(PlayerSpawnEvent.class, event -> {
+            if (!event.isFirstSpawn()) return;
+
+            Player player = event.getPlayer();
+
+            for (int i = 0; i < Color.values().length; i++) {
+                Color color = Color.values()[i];
+                ItemStack itemStack = ItemStack.of(color.material());
+                itemStack = itemStack.withCustomName(Component.text(color.name()));
+                player.getInventory().setItemStack(i, itemStack);
+            }
+        });
 
         MinecraftServer.getCommandManager().register(new GameModeCommand());
 

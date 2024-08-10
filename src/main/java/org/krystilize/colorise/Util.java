@@ -71,8 +71,8 @@ public class Util {
                             continue;
                         }
 
-                        Audiences.all().sendMessage(Component.text("Setting " + player.getUsername() + " to " + color + " " + enabled + "!"));
-                        blocks.setColor(enabled, player, color);
+                        Util.log("Setting " + player.getUsername() + " to " + color + " " + enabled + "!");
+                        blocks.setColor(enabled, player, color).join();
                     }
                     try {
                         Thread.sleep(1000);
@@ -82,5 +82,10 @@ public class Util {
                 }
             }
         }, 0, 1, TimeUnit.MILLISECONDS);
+    }
+
+    public static void log(Object log) {
+        String logString = log.toString();
+        Audiences.all().sendMessage(Component.text(logString));
     }
 }
