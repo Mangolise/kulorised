@@ -18,6 +18,7 @@ import org.krystilize.colorise.game.ColoredBlocks;
 import org.krystilize.colorise.game.ColoriseGame;
 
 import java.nio.file.Path;
+import java.util.List;
 
 public class Server {
 
@@ -32,7 +33,7 @@ public class Server {
 
         InstanceContainer level0Instance = instanceManager.createInstanceContainer(new AnvilLoader("worlds/level0"));
         ColoredBlocks coloredBlocks = InstanceAnalysis.scanForColoredBlocks(level0Instance, Path.of("worlds/level0/region"));
-        ColoriseGame game = new ColoriseGame(level0Instance, coloredBlocks);
+        ColoriseGame game = new ColoriseGame(List.of(), level0Instance, coloredBlocks);
         game.start();
         System.out.println(game);
 

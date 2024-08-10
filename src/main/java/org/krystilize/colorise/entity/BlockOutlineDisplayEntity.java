@@ -15,7 +15,6 @@ public class BlockOutlineDisplayEntity extends Entity {
             meta.setBlockState(color.glassBlock());
             meta.setBrightnessOverride(15 << 4 | 15 << 20); // blockLight << 4 | skyLight << 20
             meta.setGlowColorOverride(color.color());
-            meta.setInvisible(true);
         });
 
         setGlowing(true);

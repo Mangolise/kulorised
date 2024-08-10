@@ -41,7 +41,7 @@ public record ColoredBlocks(Instance instance, Map<Point, Color> blocks) {
     private static final Tag<Set<Color>> PLAYER_SELECTED_COLORS = Tag.<Set<Color>>Transient("selected_colors")
             .defaultValue(ConcurrentHashMap::newKeySet);
 
-    private static ExecutorService executor = Executors.newSingleThreadExecutor();
+    private static final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     private void updateEntities() {
         for (BlockOutlineDisplayEntity blockOutlineDisplayEntity : instance.getTag(INSTANCE_DISPLAY_ENTITIES).values()) {
