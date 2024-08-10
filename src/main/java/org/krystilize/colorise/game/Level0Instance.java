@@ -29,6 +29,6 @@ public class Level0Instance extends GameInstance {
 
     @Override
     public Set<Mechanic> mechanics() {
-        return Set.of(new HotbarColorController());
+        return Set.of(new HotbarColorController(), new DeathMechanic());
     }
 }
