@@ -32,7 +32,7 @@ public class ColoredBlockManagerMechanic implements Mechanic {
     @Override
     public void setup(Context context) {
         instance = context.instance();
-        blocks = context.mechanic(BlockAnalysisMechanic.class).getColoredBlocks();
+        blocks = context.mechanic(BlockAnalysisMechanic.class).COLORED_BLOCKS.get();
 
         Util.log("ColoredBlocks created with " + blocks.size() + " blocks.");
         Map<Point, BlockOutlineDisplayEntity> displayEntities = instance.getTag(INSTANCE_DISPLAY_ENTITIES);

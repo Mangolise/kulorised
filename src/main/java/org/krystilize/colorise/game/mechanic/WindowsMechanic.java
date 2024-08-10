@@ -22,7 +22,7 @@ public class WindowsMechanic implements Mechanic {
     @Override
     public void setup(Context context) {
         instance = context.instance();
-        blocks = context.mechanic(BlockAnalysisMechanic.class).getWindowPanes();
+        blocks = context.mechanic(BlockAnalysisMechanic.class).WINDOW_PANES.get();
 
         context.events().addListener(PlayerTickEvent.class, event -> {
             long age = event.getInstance().getWorldAge();
