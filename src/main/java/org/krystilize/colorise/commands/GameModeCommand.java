@@ -30,7 +30,12 @@ public class GameModeCommand extends Command {
     private void executeArgs(CommandSender sender, CommandContext context) {
         GameMode gamemode = context.get("gamemode");
         if (!(sender instanceof Player player)) return;
-        player.setGameMode(gamemode);
+
+        if (gamemode == GameMode.SURVIVAL) {
+            gamemode = GameMode.ADVENTURE;
+        }
+
+        Util.setPlayerGamemode(player, gamemode);
     }
 
     private void execute(CommandSender sender, GameMode gamemode) {

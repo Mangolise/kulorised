@@ -8,6 +8,7 @@ import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.GameMode;
 import net.minestom.server.entity.Player;
+import net.minestom.server.entity.attribute.Attribute;
 import net.minestom.server.instance.Chunk;
 import net.minestom.server.instance.block.Block;
 import org.krystilize.colorise.game.ColoredBlocks;
@@ -49,8 +50,17 @@ public class Util {
 
     public static void setPlayerGamemode(Player player, GameMode gamemode) {
         switch (gamemode) {
-            case CREATIVE -> player.setGameMode(GameMode.CREATIVE);
-            case ADVENTURE -> player.setGameMode(GameMode.ADVENTURE);
+            case CREATIVE -> {
+                player.setGameMode(GameMode.CREATIVE);
+                player.getAttribute(Attribute.PLAYER_BLOCK_INTERACTION_RANGE).setBaseValue(4.5);
+            }
+
+            case ADVENTURE -> {
+                player.setGameMode(GameMode.ADVENTURE);
+                player.getAttribute(Attribute.PLAYER_BLOCK_INTERACTION_RANGE).setBaseValue(-1);
+            }
+
+            case SPECTATOR -> player.setGameMode(GameMode.SPECTATOR);
         }
     }
 
