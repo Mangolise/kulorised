@@ -36,7 +36,8 @@ public class Level0Instance extends GameInstance {
                 new DeathMechanic(),
                 new BlockAnalysisMechanic(Path.of("worlds/level0/region")),
                 new ColoredBlockManagerMechanic(),
-                new HotbarColorController()
+                new HotbarColorController(),
+                new WindowsMechanic()
         );
     }
 }

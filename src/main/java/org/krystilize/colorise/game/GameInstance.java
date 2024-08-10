@@ -23,7 +23,9 @@ public abstract class GameInstance extends SharedInstance {
         super(UUID.randomUUID(), info.parent());
         this.game = new ColoriseGame(info.players(), queue);
         this.player1 = info.players().get(0);
+        player1.setTag(Team.TAG, Team.BLUE);
         this.player2 = info.players().get(1);
+        player2.setTag(Team.TAG, Team.GREEN);
     }
 
     protected abstract List<Mechanic> mechanics();

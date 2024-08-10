@@ -4,10 +4,11 @@ import net.minestom.server.command.CommandSender;
 import net.minestom.server.command.builder.Command;
 import net.minestom.server.command.builder.CommandContext;
 import net.minestom.server.command.builder.arguments.ArgumentEnum;
-import static net.minestom.server.command.builder.arguments.ArgumentType.*;
 import net.minestom.server.entity.GameMode;
 import net.minestom.server.entity.Player;
 import org.krystilize.colorise.Util;
+
+import static net.minestom.server.command.builder.arguments.ArgumentType.Enum;
 
 public class GameModeCommand extends Command {
     public GameModeCommand() {
