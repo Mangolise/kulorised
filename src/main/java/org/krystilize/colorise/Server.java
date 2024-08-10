@@ -1,6 +1,5 @@
 package org.krystilize.colorise;
 
-import net.kyori.adventure.text.Component;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.GameMode;
@@ -9,16 +8,12 @@ import net.minestom.server.event.GlobalEventHandler;
 import net.minestom.server.event.item.ItemDropEvent;
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
 import net.minestom.server.event.player.PlayerSpawnEvent;
-import net.minestom.server.instance.*;
+import net.minestom.server.instance.InstanceContainer;
+import net.minestom.server.instance.InstanceManager;
+import net.minestom.server.instance.LightingChunk;
 import net.minestom.server.instance.anvil.AnvilLoader;
-import net.minestom.server.item.ItemStack;
 import org.krystilize.colorise.commands.GameModeCommand;
-import org.krystilize.colorise.colors.InstanceAnalysis;
-import org.krystilize.colorise.game.ColoredBlocks;
-import org.krystilize.colorise.game.ColoriseGame;
-
-import java.nio.file.Path;
-import java.util.List;
+import org.krystilize.colorise.queue.QueueSystem;
 
 public class Server {
 
@@ -31,11 +26,7 @@ public class Server {
         InstanceContainer lobbyInstance = instanceManager.createInstanceContainer(new AnvilLoader("worlds/lobby"));
         lobbyInstance.setChunkSupplier(LightingChunk::new);
 
-        InstanceContainer level0Instance = instanceManager.createInstanceContainer(new AnvilLoader("worlds/level0"));
-        ColoredBlocks coloredBlocks = InstanceAnalysis.scanForColoredBlocks(level0Instance, Path.of("worlds/level0/region"));
-        ColoriseGame game = new ColoriseGame(List.of(), level0Instance, coloredBlocks);
-        game.start();
-        System.out.println(game);
+        QueueSystem queueSystem = new QueueSystem(lobbyInstance);
 
 //        Util.DEBUG_slowlySwapColors(coloredBlocks);
 
@@ -43,7 +34,7 @@ public class Server {
         GlobalEventHandler globalEventHandler = MinecraftServer.getGlobalEventHandler();
         globalEventHandler.addListener(AsyncPlayerConfigurationEvent.class, event -> {
             final Player player = event.getPlayer();
-            event.setSpawningInstance(level0Instance);
+            event.setSpawningInstance(lobbyInstance);
             player.setRespawnPoint(new Pos(0.5, 36, 0.5));
             Util.setPlayerGamemode(player, GameMode.ADVENTURE);
 
@@ -56,13 +47,7 @@ public class Server {
             if (!event.isFirstSpawn()) return;
 
             Player player = event.getPlayer();
-
-            for (int i = 0; i < Color.values().length; i++) {
-                Color color = Color.values()[i];
-                ItemStack itemStack = ItemStack.of(color.material());
-                itemStack = itemStack.withCustomName(Component.text("§f" + color.name()));
-                player.getInventory().setItemStack(i, itemStack);
-            }
+            queueSystem.addPlayer(player);
         });
 
         globalEventHandler.addListener(ItemDropEvent.class, event -> event.setCancelled(true));

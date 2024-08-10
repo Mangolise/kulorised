@@ -1,18 +1,19 @@
 package org.krystilize.colorise.game;
 
-import net.minestom.server.adventure.audience.Audiences;
 import net.minestom.server.coordinate.Point;
-import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.Player;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.Block;
+import net.minestom.server.network.packet.server.SendablePacket;
 import net.minestom.server.network.packet.server.play.BlockChangePacket;
 import net.minestom.server.tag.Tag;
 import org.krystilize.colorise.Color;
 import org.krystilize.colorise.Util;
 import org.krystilize.colorise.entity.BlockOutlineDisplayEntity;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -25,12 +26,14 @@ public record ColoredBlocks(Instance instance, Map<Point, Color> blocks) {
         Util.log("ColoredBlocks created with " + blocks.size() + " blocks.");
         Map<Point, BlockOutlineDisplayEntity> displayEntities = instance.getTag(INSTANCE_DISPLAY_ENTITIES);
 
-        for (var entry : blocks.entrySet()) {
-            BlockOutlineDisplayEntity entity = new BlockOutlineDisplayEntity(entry.getValue());
-            entity.updateViewableRule(viewer -> viewer.getTag(PLAYER_SELECTED_COLORS).contains(entry.getValue()));
-            entity.setInstance(instance, entry.getKey());
-            displayEntities.put(entry.getKey(), entity);
-        }
+        instance.scheduleNextTick(ignored -> {
+            for (var entry : blocks.entrySet()) {
+                BlockOutlineDisplayEntity entity = new BlockOutlineDisplayEntity(entry.getValue());
+                entity.updateViewableRule(viewer -> viewer.getTag(PLAYER_SELECTED_COLORS).contains(entry.getValue()));
+                entity.setInstance(instance, entry.getKey());
+                displayEntities.put(entry.getKey(), entity);
+            }
+        });
 
         instance.setTag(INSTANCE_DISPLAY_ENTITIES, displayEntities);
     }
@@ -62,28 +65,27 @@ public record ColoredBlocks(Instance instance, Map<Point, Color> blocks) {
             Map<Point, BlockOutlineDisplayEntity> instanceDisplayEntities = instance.getTag(INSTANCE_DISPLAY_ENTITIES);
             Set<Color> selectedColors = player.getTag(PLAYER_SELECTED_COLORS);
 
+            Set<SendablePacket> packets = new HashSet<>();
+
             if (enabled) {
                 // Set the blocks
-                Set<BlockChangePacket> packets = new HashSet<>();
                 for (Point point : points) {
                     packets.add(new BlockChangePacket(point, color.block().stateId()));
                 }
-                player.sendPackets(packets.toArray(BlockChangePacket[]::new));
 
                 // remove the color from the set
                 selectedColors.remove(color);
             } else {
-
                 // Remove the blocks
-                Set<BlockChangePacket> packets = new HashSet<>();
                 for (Point point : points) {
                     packets.add(new BlockChangePacket(point, Block.AIR.stateId()));
                 }
-                player.sendPackets(packets.toArray(BlockChangePacket[]::new));
 
                 // remove the color from the set
                 selectedColors.add(color);
             }
+
+            player.sendPackets(packets.toArray(SendablePacket[]::new));
 
             player.setTag(PLAYER_SELECTED_COLORS, selectedColors);
 

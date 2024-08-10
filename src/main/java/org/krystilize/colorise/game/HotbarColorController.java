@@ -1,41 +1,24 @@
 package org.krystilize.colorise.game;
 
-import net.kyori.adventure.text.Component;
-import net.minestom.server.adventure.audience.Audiences;
 import net.minestom.server.entity.Player;
-import net.minestom.server.event.EventListener;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.event.player.PlayerPacketEvent;
-import net.minestom.server.event.player.PlayerPacketOutEvent;
-import net.minestom.server.event.player.PlayerSpawnEvent;
 import net.minestom.server.event.trait.InstanceEvent;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.network.packet.client.play.ClientHeldItemChangePacket;
-import net.minestom.server.network.packet.server.SendablePacket;
 import org.jetbrains.annotations.Nullable;
 import org.krystilize.colorise.Color;
 import org.krystilize.colorise.Util;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicReference;
-
 /**
  * Controls setting colors when a player changes their hotbar selection
- * @param game
  */
-public record HotbarColorController(ColoriseGame game) {
+public class HotbarColorController implements Mechanic {
 
-    public HotbarColorController {
-
-        EventNode<InstanceEvent> events = game.instance().eventNode();
+    @Override
+    public void setup(ColoriseGame game, EventNode<InstanceEvent> events, GameInstance instance) {
 
         // we need to update the player's hotbar whenever they spawn
-        events.addListener(PlayerSpawnEvent.class, event -> {
-            this.updateHotbar(event.getPlayer());
-        });
-
         events.addListener(PlayerPacketEvent.class, event -> {
             Player player = event.getPlayer();
 
@@ -43,25 +26,33 @@ public record HotbarColorController(ColoriseGame game) {
                 return;
             }
 
-            player.getInstance().scheduleNextTick(ignored -> {
-                this.updateHotbar(player);
-            });
+            // only change players in the game
+            if (!game.players().contains(event.getPlayer())) {
+                return;
+            }
 
             ItemStack previous = player.getInventory().getItemStack(player.getHeldSlot());
             Color previousColor = Color.fromMaterial(previous.material());
 
             ItemStack current = player.getInventory().getItemStack(changeHeldItemPacket.slot());
             Color newColor = Color.fromMaterial(current.material());
+
             Util.log("Changing color from " + previousColor + " to " + newColor + " for " + player.getUsername() + ".");
+
+            instance.scheduleNextTick(ignored -> {
+                // TODO: Remove the assumption that we only have two players
+                Player other = game.players().stream().filter(p -> p != player).findAny().orElseThrow();
+                this.updateHotbar(game, player, other);
+            });
         });
     }
 
-    public void updateHotbar(Player player) {
+    public void updateHotbar(ColoriseGame game, Player player, Player target) {
         ItemStack heldItem = player.getInventory().getItemStack(player.getHeldSlot());
         @Nullable Color heldColor = Color.fromMaterial(heldItem.material());
 
         for (Color color : Color.values()) {
-            game.blocks().setColor(color == heldColor, player, color);
+            game.blocks().setColor(color == heldColor, target, color);
         }
     }
 }

@@ -6,7 +6,6 @@ import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.Section;
 import net.minestom.server.instance.palette.Palette;
 import org.krystilize.colorise.Color;
-import org.krystilize.colorise.game.ColoredBlocks;
 import org.krystilize.colorise.Util;
 
 import java.io.IOException;
@@ -21,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class InstanceAnalysis {
 
-    public static ColoredBlocks scanForColoredBlocks(Instance instance, Path pathToRegions) {
+    public static Map<Point, Color> scanForColoredBlocks(Instance instance, Path pathToRegions) {
         Map<Point, String> blocks = new ConcurrentHashMap<>();
 
         // for all regions
@@ -66,7 +65,7 @@ public class InstanceAnalysis {
                             }
 
                             Util.forEachNonAirBlockInChunk(chunk, (point, block) -> {
-                                if (!Util.isBlockColoredConcrete(block)) {
+                                if (!Util.isColoredBlock(block)) {
                                     return;
                                 }
                                 blocks.put(point, block.name());
@@ -92,6 +91,6 @@ public class InstanceAnalysis {
             colors.put(point, color);
         });
 
-        return new ColoredBlocks(instance, Map.copyOf(colors));
+        return Map.copyOf(colors);
     }
 }

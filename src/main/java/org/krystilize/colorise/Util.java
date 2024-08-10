@@ -35,17 +35,17 @@ public class Util {
         }
     }
 
-    private static final IntSet concreteBlocks = IntSet.of(
+    private static final IntSet coloredBlocks = IntSet.of(
             Block.values().stream()
-                    .filter(block -> block.name().endsWith("concrete"))
+                    .filter(block -> block.name().endsWith("wool"))
                     .filter(block -> !block.name().contains("white"))
                     .filter(block -> !block.name().contains("gray"))
                     .filter(block -> !block.name().contains("black"))
                     .mapToInt(Block::stateId)
                     .toArray()
     );
-    public static boolean isBlockColoredConcrete(Block block) {
-        return concreteBlocks.contains(block.stateId());
+    public static boolean isColoredBlock(Block block) {
+        return coloredBlocks.contains(block.stateId());
     }
 
     public static void setPlayerGamemode(Player player, GameMode gamemode) {
