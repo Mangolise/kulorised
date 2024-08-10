@@ -10,7 +10,10 @@ import net.minestom.server.entity.Player;
 import net.minestom.server.entity.attribute.Attribute;
 import net.minestom.server.instance.Chunk;
 import net.minestom.server.instance.block.Block;
+import net.minestom.server.scoreboard.Team;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
@@ -68,6 +71,7 @@ public class Util {
     }
 
     public static final Set<String> ADMINS = Set.of("Calcilore", "EclipsedMango", "Krystilize", "CoPokBl");
+    public static final Map<Color, Team> COLOR_TEAMS = new HashMap<>();
 
     public static void log(Object log) {
         String logString = log.toString();

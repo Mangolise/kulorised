@@ -1,5 +1,7 @@
 package org.krystilize.colorise;
 
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.GameMode;
@@ -13,8 +15,9 @@ import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.InstanceManager;
 import net.minestom.server.instance.LightingChunk;
 import net.minestom.server.instance.anvil.AnvilLoader;
+import net.minestom.server.scoreboard.Team;
+import net.minestom.server.scoreboard.TeamManager;
 import org.krystilize.colorise.commands.GameModeCommand;
-import org.krystilize.colorise.commands.ObserveCommand;
 import org.krystilize.colorise.queue.QueueSystem;
 
 public class Server {
@@ -50,14 +53,27 @@ public class Server {
 
             Player player = event.getPlayer();
             queueSystem.addPlayer(player);
+            player.setGlowing(true);
         });
+
+        {
+            TeamManager tm = MinecraftServer.getTeamManager();
+
+            for (Color color : Color.values()) {
+                Team team = tm.createTeam(color.name());
+                team.setTeamColor(NamedTextColor.nearestTo(TextColor.color(color.color())));
+                Util.COLOR_TEAMS.put(color, team);
+            }
+
+            Team team = tm.createTeam("WHITE");
+            Util.COLOR_TEAMS.put(null, team);
+        }
 
         globalEventHandler.addListener(PlayerDisconnectEvent.class, event -> queueSystem.removePlayer(event.getPlayer()));
 
         globalEventHandler.addListener(ItemDropEvent.class, event -> event.setCancelled(true));
 
         MinecraftServer.getCommandManager().register(new GameModeCommand());
-        MinecraftServer.getCommandManager().register(new ObserveCommand(queueSystem));
 
         // Start the server on port 25565
         minecraftServer.start("0.0.0.0", 25565);

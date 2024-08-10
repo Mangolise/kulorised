@@ -66,5 +66,7 @@ public class HotbarColorController implements Mechanic {
 
         ColorChangeEvent event = new ColorChangeEvent(heldColor, player);
         EventDispatcher.call(event);
+
+        player.setTeam(Util.COLOR_TEAMS.get(heldColor));
     }
 }
