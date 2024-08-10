@@ -1,4 +1,4 @@
-package org.krystilize.colorise.game;
+package org.krystilize.colorise.game.mechanic;
 
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.entity.Player;
@@ -7,6 +7,7 @@ import net.minestom.server.instance.block.Block;
 import net.minestom.server.network.packet.server.SendablePacket;
 import net.minestom.server.network.packet.server.play.BlockChangePacket;
 import net.minestom.server.tag.Tag;
+import org.jetbrains.annotations.UnknownNullability;
 import org.krystilize.colorise.Color;
 import org.krystilize.colorise.Util;
 import org.krystilize.colorise.entity.BlockOutlineDisplayEntity;
@@ -20,9 +21,18 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-public record ColoredBlocks(Instance instance, Map<Point, Color> blocks) {
+public class ColoredBlockManagerMechanic implements Mechanic {
 
-    public ColoredBlocks {
+    public ColoredBlockManagerMechanic() {
+    }
+
+    private @UnknownNullability Instance instance;
+    private @UnknownNullability Map<Point, Color> blocks;
+    @Override
+    public void setup(Context context) {
+        instance = context.instance();
+        blocks = context.mechanic(BlockAnalysisMechanic.class).getColoredBlocks();
+
         Util.log("ColoredBlocks created with " + blocks.size() + " blocks.");
         Map<Point, BlockOutlineDisplayEntity> displayEntities = instance.getTag(INSTANCE_DISPLAY_ENTITIES);
 
@@ -54,7 +64,7 @@ public record ColoredBlocks(Instance instance, Map<Point, Color> blocks) {
 
     public CompletableFuture<Void> setColor(boolean enabled, Player player, Color color) {;
         return CompletableFuture.runAsync(() -> {
-//            Util.log("Setting color " + color + " to " + enabled + " for " + player.getUsername() + ".");
+            Util.log("Setting color " + color + " to " + enabled + " for " + player.getUsername() + ".");
 
             // Get all block positions of the specified color
             Set<Point> points = blocks.entrySet().stream()
@@ -62,7 +72,6 @@ public record ColoredBlocks(Instance instance, Map<Point, Color> blocks) {
                     .map(Map.Entry::getKey)
                     .collect(Collectors.toUnmodifiableSet());
 
-            Map<Point, BlockOutlineDisplayEntity> instanceDisplayEntities = instance.getTag(INSTANCE_DISPLAY_ENTITIES);
             Set<Color> selectedColors = player.getTag(PLAYER_SELECTED_COLORS);
 
             Set<SendablePacket> packets = new HashSet<>();
@@ -81,7 +90,7 @@ public record ColoredBlocks(Instance instance, Map<Point, Color> blocks) {
                     packets.add(new BlockChangePacket(point, Block.AIR.stateId()));
                 }
 
-                // remove the color from the set
+                // add the color from the set
                 selectedColors.add(color);
             }
 

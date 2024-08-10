@@ -1,25 +1,40 @@
-package org.krystilize.colorise.game;
+package org.krystilize.colorise.game.mechanic;
 
 import net.minestom.server.entity.Player;
-import net.minestom.server.event.EventNode;
 import net.minestom.server.event.player.PlayerPacketEvent;
-import net.minestom.server.event.trait.InstanceEvent;
+import net.minestom.server.event.player.PlayerSpawnEvent;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.network.packet.client.play.ClientHeldItemChangePacket;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 import org.krystilize.colorise.Color;
 import org.krystilize.colorise.Util;
+import org.krystilize.colorise.game.ColoriseGame;
+import org.krystilize.colorise.game.GameInstance;
 
 /**
  * Controls setting colors when a player changes their hotbar selection
  */
 public class HotbarColorController implements Mechanic {
 
+    private @UnknownNullability ColoredBlockManagerMechanic coloredBlockManager;
+
     @Override
-    public void setup(ColoriseGame game, EventNode<InstanceEvent> events, GameInstance instance) {
+    public void setup(Context context) {
+        ColoriseGame game = context.game();
+        GameInstance instance = context.instance();
+        coloredBlockManager = context.mechanic(ColoredBlockManagerMechanic.class);
+
+
+        context.events().addListener(PlayerSpawnEvent.class, event -> {
+            Player player = event.getPlayer();
+            for (Color color : Color.values()) {
+                coloredBlockManager.setColor(false, player, color);
+            }
+        });
 
         // we need to update the player's hotbar whenever they spawn
-        events.addListener(PlayerPacketEvent.class, event -> {
+        context.events().addListener(PlayerPacketEvent.class, event -> {
             Player player = event.getPlayer();
 
             if (!(event.getPacket() instanceof ClientHeldItemChangePacket changeHeldItemPacket)) {
@@ -52,7 +67,7 @@ public class HotbarColorController implements Mechanic {
         @Nullable Color heldColor = Color.fromMaterial(heldItem.material());
 
         for (Color color : Color.values()) {
-            game.blocks().setColor(color == heldColor, target, color);
+            coloredBlockManager.setColor(color == heldColor, target, color);
         }
     }
 }

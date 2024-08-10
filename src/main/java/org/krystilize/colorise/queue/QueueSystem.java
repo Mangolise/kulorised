@@ -1,23 +1,18 @@
 package org.krystilize.colorise.queue;
 
 import net.minestom.server.MinecraftServer;
-import net.minestom.server.coordinate.Point;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.instance.InstanceTickEvent;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.anvil.AnvilLoader;
 import net.minestom.server.tag.Tag;
-import org.krystilize.colorise.Color;
 import org.krystilize.colorise.Util;
-import org.krystilize.colorise.colors.InstanceAnalysis;
 import org.krystilize.colorise.game.GameInfo;
 import org.krystilize.colorise.game.Level0Instance;
 
-import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.List;
-import java.util.Map;
 import java.util.Queue;
 
 public record QueueSystem(Instance lobby) {
@@ -55,11 +50,9 @@ public record QueueSystem(Instance lobby) {
 
             InstanceContainer level0Instance = lobby.getTag(LEVEL0_INSTANCE);
 
-            // TODO: Don't scan every time a game starts, scan only once on startup
-            Map<Point, Color> coloredBlocks = InstanceAnalysis.scanForColoredBlocks(level0Instance, Path.of("worlds/level0/region"));
-            GameInfo info = new GameInfo(List.of(p1, p2), coloredBlocks, level0Instance);
+            GameInfo info = new GameInfo(List.of(p1, p2), level0Instance);
             MinecraftServer.getInstanceManager().registerInstance(level0Instance);
-            Level0Instance level0 = new Level0Instance(info);
+            Level0Instance level0 = new Level0Instance(this, info);
             MinecraftServer.getInstanceManager().registerSharedInstance(level0);
 
             // add players to the game

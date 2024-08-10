@@ -11,7 +11,7 @@ import net.minestom.server.entity.Player;
 import net.minestom.server.entity.attribute.Attribute;
 import net.minestom.server.instance.Chunk;
 import net.minestom.server.instance.block.Block;
-import org.krystilize.colorise.game.ColoredBlocks;
+import org.krystilize.colorise.game.mechanic.ColoredBlockManagerMechanic;
 
 import java.util.Set;
 import java.util.concurrent.Executors;
@@ -69,17 +69,13 @@ public class Util {
     /**
      * This debug util method slowly rotates throughout all colors for all players in the instance
      */
-    public static void DEBUG_slowlySwapColors(ColoredBlocks blocks) {
+    public static void DEBUG_slowlySwapColors(ColoredBlockManagerMechanic blocks) {
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
         executor.scheduleAtFixedRate(() -> {
             for (boolean enabled : new boolean[]{true, false}) {
                 for (Color color : Color.values()) {
                     for (Player player : MinecraftServer.getConnectionManager().getOnlinePlayers()) {
-
-                        if (!player.getInstance().equals(blocks.instance())) {
-                            continue;
-                        }
 
                         Util.log("Setting " + player.getUsername() + " to " + color + " " + enabled + "!");
                         blocks.setColor(enabled, player, color).join();
