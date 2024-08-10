@@ -36,26 +36,7 @@ public class Server {
         game.start();
         System.out.println(game);
 
-        var executor = Executors.newSingleThreadScheduledExecutor();
-
-        executor.scheduleAtFixedRate(() -> {
-            for (boolean enabled : new boolean[]{true, false}) {
-                System.out.println("Enabled: " + enabled);
-                for (Color color : Color.values()) {
-                    System.out.println("Color: " + color);
-                    for (Player player : MinecraftServer.getConnectionManager().getOnlinePlayers()) {
-                        System.out.println("Player: " + player.getUsername());
-                        Audiences.all().sendMessage(Component.text("Setting " + player.getUsername() + " to " + color + " " + enabled + "!"));
-                        coloredBlocks.setColor(enabled, player, color);
-                    }
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-        }, 0, 1, TimeUnit.MILLISECONDS);
+//        Util.DEBUG_slowlySwapColors(coloredBlocks);
 
         // Add an event callback to specify the spawning instance (and the spawn position)
         GlobalEventHandler globalEventHandler = MinecraftServer.getGlobalEventHandler();

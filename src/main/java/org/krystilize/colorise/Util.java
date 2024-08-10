@@ -1,14 +1,21 @@
 package org.krystilize.colorise;
 
 import it.unimi.dsi.fastutil.ints.IntSet;
+import net.kyori.adventure.text.Component;
+import net.minestom.server.MinecraftServer;
+import net.minestom.server.adventure.audience.Audiences;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.GameMode;
 import net.minestom.server.entity.Player;
 import net.minestom.server.instance.Chunk;
 import net.minestom.server.instance.block.Block;
+import org.krystilize.colorise.game.ColoredBlocks;
 
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 
 public class Util {
@@ -48,4 +55,32 @@ public class Util {
     }
 
     public static final Set<String> ADMINS = Set.of("Calcilore", "EclipsedMango", "Krystilize", "CoPokBl");
+
+    /**
+     * This debug util method slowly rotates throughout all colors for all players in the instance
+     */
+    public static void DEBUG_slowlySwapColors(ColoredBlocks blocks) {
+        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+
+        executor.scheduleAtFixedRate(() -> {
+            for (boolean enabled : new boolean[]{true, false}) {
+                for (Color color : Color.values()) {
+                    for (Player player : MinecraftServer.getConnectionManager().getOnlinePlayers()) {
+
+                        if (!player.getInstance().equals(blocks.instance())) {
+                            continue;
+                        }
+
+                        Audiences.all().sendMessage(Component.text("Setting " + player.getUsername() + " to " + color + " " + enabled + "!"));
+                        blocks.setColor(enabled, player, color);
+                    }
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }, 0, 1, TimeUnit.MILLISECONDS);
+    }
 }
