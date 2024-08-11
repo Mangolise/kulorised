@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 import org.krystilize.colorise.Color;
 import org.krystilize.colorise.Util;
-import org.krystilize.colorise.colors.ColorChangeEvent;
+import org.krystilize.colorise.event.ColorChangeEvent;
 import org.krystilize.colorise.game.ColoriseGame;
 import org.krystilize.colorise.game.GameInstance;
 

@@ -10,7 +10,7 @@ import net.minestom.server.tag.Tag;
 import org.jetbrains.annotations.UnknownNullability;
 import org.krystilize.colorise.Color;
 import org.krystilize.colorise.Util;
-import org.krystilize.colorise.colors.ColorChangeEvent;
+import org.krystilize.colorise.event.ColorChangeEvent;
 import org.krystilize.colorise.entity.BlockOutlineDisplayEntity;
 
 import java.util.HashSet;

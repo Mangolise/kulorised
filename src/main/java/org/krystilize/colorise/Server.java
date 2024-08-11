@@ -13,6 +13,7 @@ import net.minestom.server.event.item.ItemDropEvent;
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
 import net.minestom.server.event.player.PlayerDisconnectEvent;
 import net.minestom.server.event.player.PlayerSpawnEvent;
+import net.minestom.server.event.server.ServerTickMonitorEvent;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.InstanceManager;
 import net.minestom.server.instance.LightingChunk;
@@ -22,6 +23,9 @@ import net.minestom.server.scoreboard.TeamManager;
 import net.minestom.server.sound.SoundEvent;
 import org.krystilize.colorise.commands.GameModeCommand;
 import org.krystilize.colorise.commands.ObserveCommand;
+import org.krystilize.colorise.commands.JoinCommand;
+import org.krystilize.colorise.commands.ObserveCommand;
+import org.krystilize.colorise.queue.JoinInviteSystem;
 import org.krystilize.colorise.queue.QueueSystem;
 
 public class Server {
@@ -84,8 +88,11 @@ public class Server {
             }
         });
 
+        JoinInviteSystem.start();
+
         MinecraftServer.getCommandManager().register(new GameModeCommand());
         MinecraftServer.getCommandManager().register(new ObserveCommand(queueSystem));
+        MinecraftServer.getCommandManager().register(new JoinCommand());
 
         // Start the server on port 25565
         minecraftServer.start("0.0.0.0", 25565);

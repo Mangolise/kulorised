@@ -13,6 +13,7 @@ import net.minestom.server.entity.attribute.Attribute;
 import net.minestom.server.instance.Chunk;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.scoreboard.Team;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -91,5 +92,9 @@ public class Util {
         }
 
         return true;
+    }
+
+    public static boolean isPlayer(CommandSender commandSender, @Nullable String s) {
+        return commandSender instanceof Player;
     }
 }
