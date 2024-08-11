@@ -49,11 +49,8 @@ public class Util {
     }
 
     public static boolean isWindowPane(Block block) {
-        return block.name().endsWith("_pane") &&
-                block.name().contains("stained_glass") &&
-                !block.name().contains("black") &&
-                !block.name().contains("white") &&
-                !block.name().contains("gray");
+        return block.name().endsWith("_stained_glass_pane") &&
+                !block.name().contains("black");
     }
 
     public static void setPlayerGamemode(Player player, GameMode gamemode) {
