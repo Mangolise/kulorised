@@ -77,7 +77,7 @@ public class ColoredBlockManagerMechanic implements Mechanic {
         }
     }
 
-    private CompletableFuture<Void> setColor(boolean enabled, Player player, Color color) {;
+    private CompletableFuture<Void> setColor(boolean enabled, Player player, Color color) {
         return CompletableFuture.runAsync(() -> {
             Util.log("Setting color " + color + " to " + enabled + " for " + player.getUsername() + ".");
 
@@ -99,6 +99,8 @@ public class ColoredBlockManagerMechanic implements Mechanic {
 
                 // remove the color from the set
                 selectedColors.remove(color);
+
+                player.sendPackets(packets.toArray(SendablePacket[]::new));
             } else {
                 // Remove the blocks
                 for (Point point : points) {
@@ -107,9 +109,11 @@ public class ColoredBlockManagerMechanic implements Mechanic {
 
                 // add the color from the set
                 selectedColors.add(color);
-            }
 
-            player.sendPackets(packets.toArray(SendablePacket[]::new));
+                instance.scheduler().scheduleNextTick(() -> {
+                    player.sendPackets(packets.toArray(SendablePacket[]::new));
+                });
+            }
 
             player.setTag(PLAYER_SELECTED_COLORS, selectedColors);
 
