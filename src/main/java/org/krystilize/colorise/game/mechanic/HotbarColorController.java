@@ -6,6 +6,7 @@ import net.minestom.server.event.player.PlayerPacketEvent;
 import net.minestom.server.event.player.PlayerSpawnEvent;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.network.packet.client.play.ClientHeldItemChangePacket;
+import net.minestom.server.timer.TaskSchedule;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 import org.krystilize.colorise.Color;
@@ -29,9 +30,7 @@ public class HotbarColorController implements Mechanic {
 
         context.events().addListener(PlayerSpawnEvent.class, event -> {
             Player player = event.getPlayer();
-            event.getInstance().scheduleNextTick(ignored -> {
-                this.updateHotbar(player);
-            });
+            event.getInstance().scheduler().scheduleTask(() -> this.updateHotbar(player), TaskSchedule.seconds(1), TaskSchedule.stop());
         });
 
         // we need to update the player's hotbar whenever they spawn
@@ -55,9 +54,7 @@ public class HotbarColorController implements Mechanic {
 
             Util.log("Changing color from " + previousColor + " to " + newColor + " for " + player.getUsername() + ".");
 
-            instance.scheduleNextTick(ignored -> {
-                this.updateHotbar(player);
-            });
+            instance.scheduleNextTick(ignored -> this.updateHotbar(player));
         });
     }
 
