@@ -28,14 +28,11 @@ public class HotbarColorController implements Mechanic {
         GameInstance instance = context.instance();
         coloredBlockManager = context.mechanic(ColoredBlockManagerMechanic.class);
 
-        context.events().addListener(PlayerSpawnEvent.class, event -> {
-            Player player = event.getPlayer();
-            instance.scheduler()
-                    .scheduleTask(() -> {
-                        this.updateHotbar(player);
-                        return TaskSchedule.stop();
-                    }, TaskSchedule.seconds(1));
-        });
+        instance.scheduler()
+                .scheduleTask(() -> {
+                    game.players().forEach(this::updateHotbar);
+                    return TaskSchedule.stop();
+                }, TaskSchedule.seconds(1));
 
         // we need to update the player's hotbar whenever they spawn
         context.events().addListener(PlayerPacketEvent.class, event -> {
@@ -50,12 +47,10 @@ public class HotbarColorController implements Mechanic {
                 return;
             }
 
-            ItemStack previous = player.getInventory().getItemStack(player.getHeldSlot());
-            Color previousColor = Color.fromMaterial(previous.material());
-
-            ItemStack current = player.getInventory().getItemStack(changeHeldItemPacket.slot());
-            Color newColor = Color.fromMaterial(current.material());
-
+//            ItemStack previous = player.getInventory().getItemStack(player.getHeldSlot());
+//            Color previousColor = Color.fromMaterial(previous.material());
+//            ItemStack current = player.getInventory().getItemStack(changeHeldItemPacket.slot());
+//            Color newColor = Color.fromMaterial(current.material());
 //            Util.log("Changing color from " + previousColor + " to " + newColor + " for " + player.getUsername() + ".");
 
             instance.scheduleNextTick(ignored -> this.updateHotbar(player));
