@@ -19,4 +19,16 @@ public enum Team {
     public List<Color> colors() {
         return colors;
     }
+
+    public static Team getTeamFromColor(Color color) {
+        for (Team team : Team.values()) {
+            for (Color teamColor : team.colors) {
+                if (teamColor == color) {
+                    return team;
+                }
+            }
+        }
+
+        return null;
+    }
 }

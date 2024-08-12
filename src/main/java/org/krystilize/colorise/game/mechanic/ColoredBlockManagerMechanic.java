@@ -10,8 +10,11 @@ import net.minestom.server.tag.Tag;
 import org.jetbrains.annotations.UnknownNullability;
 import org.krystilize.colorise.Color;
 import org.krystilize.colorise.Util;
+import org.krystilize.colorise.entity.BlockOutlineEntityGroup;
 import org.krystilize.colorise.event.ColorChangeEvent;
-import org.krystilize.colorise.entity.BlockOutlineDisplayEntity;
+import org.krystilize.colorise.entity.BlockOutlineEntity;
+import org.krystilize.colorise.game.GameInstance;
+import org.krystilize.colorise.game.Team;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -35,14 +38,14 @@ public class ColoredBlockManagerMechanic implements Mechanic {
         blocks = context.mechanic(BlockAnalysisMechanic.class).COLORED_BLOCKS.get();
 
         Util.log("ColoredBlocks created with " + blocks.size() + " blocks.");
-        Map<Point, BlockOutlineDisplayEntity> displayEntities = instance.getTag(INSTANCE_DISPLAY_ENTITIES);
+        Map<Point, BlockOutlineEntityGroup> displayEntities = instance.getTag(INSTANCE_DISPLAY_ENTITIES);
 
         instance.scheduleNextTick(ignored -> {
             for (var entry : blocks.entrySet()) {
-                BlockOutlineDisplayEntity entity = new BlockOutlineDisplayEntity(entry.getValue());
-                entity.updateViewableRule(viewer -> viewer.getTag(PLAYER_SELECTED_COLORS).contains(entry.getValue()));
-                entity.setInstance(instance, entry.getKey());
-                displayEntities.put(entry.getKey(), entity);
+                BlockOutlineEntity normal = createBlockOutlineDisplayEntity(entry, false);
+                BlockOutlineEntity glowing = createBlockOutlineDisplayEntity(entry, true);
+
+                displayEntities.put(entry.getKey(), new BlockOutlineEntityGroup(normal, glowing));
             }
         });
 
@@ -63,7 +66,31 @@ public class ColoredBlockManagerMechanic implements Mechanic {
         });
     }
 
-    private static final Tag<Map<Point, BlockOutlineDisplayEntity>> INSTANCE_DISPLAY_ENTITIES = Tag.<Map<Point, BlockOutlineDisplayEntity>>Transient("display_entities")
+    public BlockOutlineEntity createBlockOutlineDisplayEntity(Map.Entry<Point, Color> entry, boolean glowing) {
+        BlockOutlineEntity entity = new BlockOutlineEntity(entry.getValue());
+        entity.setInstance(instance, entry.getKey());
+        entity.setGlowing(glowing);
+
+        entity.updateViewableRule(player -> {
+            boolean teammateColorOff = player.getTag(PLAYER_SELECTED_COLORS).contains(entry.getValue());
+            boolean playerColorOff = (player.getTag(Team.TAG) == Team.BLUE ?
+                    ((GameInstance)instance).getPlayer2() : ((GameInstance)instance).getPlayer1())
+                    .getTag(PLAYER_SELECTED_COLORS).contains(entry.getValue());
+
+            boolean sameTeam = player.getTag(Team.TAG) == Team.getTeamFromColor(entry.getValue());
+
+            if (sameTeam) {
+                System.out.println(player.getUsername() + ": " + entry.getValue() + " " + playerColorOff);
+                return playerColorOff != glowing;
+            }
+
+            return teammateColorOff && !glowing;
+        });
+
+        return entity;
+    }
+
+    private static final Tag<Map<Point, BlockOutlineEntityGroup>> INSTANCE_DISPLAY_ENTITIES = Tag.<Map<Point, BlockOutlineEntityGroup>>Transient("display_entities")
             .defaultValue(ConcurrentHashMap::new);
 
     private static final Tag<Set<Color>> PLAYER_SELECTED_COLORS = Tag.<Set<Color>>Transient("selected_colors")
@@ -72,8 +99,9 @@ public class ColoredBlockManagerMechanic implements Mechanic {
     private static final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     private void updateEntities() {
-        for (BlockOutlineDisplayEntity blockOutlineDisplayEntity : instance.getTag(INSTANCE_DISPLAY_ENTITIES).values()) {
-            blockOutlineDisplayEntity.updateViewableRule();
+        for (BlockOutlineEntityGroup blockOutlineDisplayEntity : instance.getTag(INSTANCE_DISPLAY_ENTITIES).values()) {
+            blockOutlineDisplayEntity.glowingEntity().updateViewableRule();
+            blockOutlineDisplayEntity.normalEntity().updateViewableRule();
         }
     }
 

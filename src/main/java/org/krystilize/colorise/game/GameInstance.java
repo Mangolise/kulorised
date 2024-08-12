@@ -4,8 +4,6 @@ import net.minestom.server.entity.Player;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.event.trait.InstanceEvent;
 import net.minestom.server.instance.SharedInstance;
-import net.minestom.server.tag.Tag;
-import org.jetbrains.annotations.Nullable;
 import org.krystilize.colorise.game.mechanic.Mechanic;
 import org.krystilize.colorise.queue.QueueSystem;
 
@@ -73,6 +71,14 @@ public abstract class GameInstance extends SharedInstance {
             game.queue().addPlayer(player2);
             player2.setInstance(game.queue().lobby());
         }
+    }
+
+    public Player getPlayer1() {
+        return player1;
+    }
+
+    public Player getPlayer2() {
+        return player2;
     }
 
     private record MechanicsContextImpl(ColoriseGame game, EventNode<InstanceEvent> events, GameInstance instance,

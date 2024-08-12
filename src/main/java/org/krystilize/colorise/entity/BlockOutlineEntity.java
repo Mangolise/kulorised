@@ -5,8 +5,8 @@ import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.metadata.display.BlockDisplayMeta;
 import org.krystilize.colorise.Color;
 
-public class BlockOutlineDisplayEntity extends Entity {
-    public BlockOutlineDisplayEntity(Color color) {
+public class BlockOutlineEntity extends Entity {
+    public BlockOutlineEntity(Color color) {
         super(EntityType.BLOCK_DISPLAY);
 
         setNoGravity(true);
