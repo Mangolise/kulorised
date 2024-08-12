@@ -17,8 +17,8 @@ public class TimerMechanic implements Mechanic {
 
                 long seconds = (System.currentTimeMillis() - startTime) / 1000;
 
-                long displayMinutes = seconds / 60;
-                long displaySeconds = seconds % 60;
+                String displayMinutes = String.format("%02d", seconds / 60);
+                String displaySeconds = String.format("%02d", seconds % 60);
 
                 player.sendActionBar(Component.text("Time passed - " + displayMinutes + ":" + displaySeconds));
             }
