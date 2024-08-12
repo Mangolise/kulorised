@@ -17,6 +17,7 @@ import net.minestom.server.event.player.PlayerMoveEvent;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.Block;
 import org.jetbrains.annotations.UnknownNullability;
+import org.krystilize.colorise.Util;
 
 public class CheckpointMechanic implements Mechanic {
     private @UnknownNullability Map<Point, Point> checkpoints;
@@ -75,7 +76,7 @@ public class CheckpointMechanic implements Mechanic {
                     // if the current checkpoint is not this one
                     if (player.getRespawnPoint().distanceSquared(plate.getValue()) > 0.5) {
                         player.setRespawnPoint(Pos.fromPoint(plate.getValue()).withYaw(-90.0F));
-                        player.sendTitlePart(TitlePart.SUBTITLE, Component.text("Checkpoint Reached!"));
+                        Util.playerAction(player, "", "Checkpoint Reached!", player.getPosition());
                     }
                     break;
                 }

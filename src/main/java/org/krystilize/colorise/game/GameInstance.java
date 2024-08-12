@@ -4,6 +4,7 @@ import net.minestom.server.entity.Player;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.event.trait.InstanceEvent;
 import net.minestom.server.instance.SharedInstance;
+import org.krystilize.colorise.Server;
 import org.krystilize.colorise.game.mechanic.Mechanic;
 import org.krystilize.colorise.queue.QueueSystem;
 
@@ -65,11 +66,11 @@ public abstract class GameInstance extends SharedInstance {
         // send all players back to the queue
         if (player1.isOnline()) {
             game.queue().addPlayer(player1);
-            player1.setInstance(game.queue().lobby());
+            player1.setInstance(game.queue().lobby(), Server.SPAWN);
         }
         if (player2.isOnline()) {
             game.queue().addPlayer(player2);
-            player2.setInstance(game.queue().lobby());
+            player2.setInstance(game.queue().lobby(), Server.SPAWN);
         }
     }
 

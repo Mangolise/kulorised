@@ -28,6 +28,8 @@ import org.krystilize.colorise.queue.QueueSystem;
 
 public class Server {
 
+    public static final Pos SPAWN = new Pos(0.5, 36, 0.5, -90f, 0f);
+
     public static void main(String[] args) {
         // Initialization
         MinecraftServer minecraftServer = MinecraftServer.init();
@@ -46,7 +48,7 @@ public class Server {
         globalEventHandler.addListener(AsyncPlayerConfigurationEvent.class, event -> {
             final Player player = event.getPlayer();
             event.setSpawningInstance(lobbyInstance);
-            player.setRespawnPoint(new Pos(0.5, 36, 0.5, -90f, 0f));
+            player.setRespawnPoint(SPAWN);
             player.setGameMode(GameMode.ADVENTURE);
 
             if (Util.ADMINS.contains(player.getUsername())) {
