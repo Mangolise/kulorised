@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.TitlePart;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
@@ -74,7 +75,7 @@ public class CheckpointMechanic implements Mechanic {
                     // if the current checkpoint is not this one
                     if (player.getRespawnPoint().distanceSquared(plate.getValue()) > 0.5) {
                         player.setRespawnPoint(Pos.fromPoint(plate.getValue()).withYaw(-90.0F));
-                        player.sendActionBar(Component.text("Checkpoint Reached!"));
+                        player.sendTitlePart(TitlePart.SUBTITLE, Component.text("Checkpoint Reached!"));
                     }
                     break;
                 }

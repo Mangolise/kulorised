@@ -47,7 +47,7 @@ public class Server {
             final Player player = event.getPlayer();
             event.setSpawningInstance(lobbyInstance);
             player.setRespawnPoint(new Pos(0.5, 36, 0.5, -90f, 0f));
-            Util.setPlayerGamemode(player, GameMode.ADVENTURE);
+            player.setGameMode(GameMode.ADVENTURE);
 
             if (Util.ADMINS.contains(player.getUsername())) {
                 player.setPermissionLevel(4);

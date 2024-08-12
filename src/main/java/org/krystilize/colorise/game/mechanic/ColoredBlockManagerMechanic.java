@@ -80,7 +80,7 @@ public class ColoredBlockManagerMechanic implements Mechanic {
             boolean sameTeam = player.getTag(Team.TAG) == Team.getTeamFromColor(entry.getValue());
 
             if (sameTeam) {
-                System.out.println(player.getUsername() + ": " + entry.getValue() + " " + playerColorOff);
+//                Util.log(player.getUsername() + ": " + entry.getValue() + " " + playerColorOff);
                 return playerColorOff != glowing;
             }
 
@@ -107,7 +107,7 @@ public class ColoredBlockManagerMechanic implements Mechanic {
 
     private CompletableFuture<Void> setColor(boolean enabled, Player player, Color color) {
         return CompletableFuture.runAsync(() -> {
-            Util.log("Setting color " + color + " to " + enabled + " for " + player.getUsername() + ".");
+//            Util.log("Setting color " + color + " to " + enabled + " for " + player.getUsername() + ".");
 
             // Get all block positions of the specified color
             Set<Point> points = blocks.entrySet().stream()

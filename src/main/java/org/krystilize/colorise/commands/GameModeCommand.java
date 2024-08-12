@@ -4,7 +4,7 @@ import net.minestom.server.command.CommandSender;
 import net.minestom.server.command.builder.Command;
 import net.minestom.server.command.builder.CommandContext;
 import net.minestom.server.command.builder.arguments.ArgumentEnum;
-import static net.minestom.server.command.builder.arguments.ArgumentType.*;
+
 import static org.krystilize.colorise.Util.lacksPermission;
 import net.minestom.server.entity.GameMode;
 import net.minestom.server.entity.Player;
@@ -42,7 +42,7 @@ public class GameModeCommand extends Command {
             gamemode = GameMode.ADVENTURE;
         }
 
-        Util.setPlayerGamemode(player, gamemode);
+        player.setGameMode(gamemode);
     }
 
     private void execute(CommandSender sender, GameMode gamemode) {
@@ -62,6 +62,6 @@ public class GameModeCommand extends Command {
             return;
         }
 
-        Util.setPlayerGamemode(player, gamemode);
+        player.setGameMode(gamemode);
     }
 }

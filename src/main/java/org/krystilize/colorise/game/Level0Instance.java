@@ -32,6 +32,7 @@ public class Level0Instance extends GameInstance {
     @Override
     public List<Mechanic> mechanics() {
         return List.of(
+                new TimerMechanic(),
                 new PlayerLeaveMechanic(),
                 new BlockAnalysisMechanic(Path.of("worlds/level0/region")),
                 new RespawnMechanic(),

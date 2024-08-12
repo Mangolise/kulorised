@@ -7,9 +7,7 @@ import net.minestom.server.command.CommandSender;
 import net.minestom.server.command.ConsoleSender;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Vec;
-import net.minestom.server.entity.GameMode;
 import net.minestom.server.entity.Player;
-import net.minestom.server.entity.attribute.Attribute;
 import net.minestom.server.instance.Chunk;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.scoreboard.Team;
@@ -60,22 +58,6 @@ public class Util {
 
     public static boolean isStainedGlass(Block block) {
         return block.name().endsWith("_stained_glass");
-    }
-
-    public static void setPlayerGamemode(Player player, GameMode gamemode) {
-        switch (gamemode) {
-            case CREATIVE -> {
-                player.setGameMode(GameMode.CREATIVE);
-                player.getAttribute(Attribute.PLAYER_BLOCK_INTERACTION_RANGE).setBaseValue(4.5);
-            }
-
-            case ADVENTURE -> {
-                player.setGameMode(GameMode.ADVENTURE);
-                player.getAttribute(Attribute.PLAYER_BLOCK_INTERACTION_RANGE).setBaseValue(-1);
-            }
-
-            case SPECTATOR -> player.setGameMode(GameMode.SPECTATOR);
-        }
     }
 
     public static final Set<String> ADMINS = Set.of("Calcilore", "EclipsedMango", "Krystilize", "CoPokBl");

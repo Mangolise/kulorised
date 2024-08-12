@@ -30,7 +30,11 @@ public class HotbarColorController implements Mechanic {
 
         context.events().addListener(PlayerSpawnEvent.class, event -> {
             Player player = event.getPlayer();
-            event.getInstance().scheduler().scheduleTask(() -> this.updateHotbar(player), TaskSchedule.seconds(1), TaskSchedule.stop());
+            instance.scheduler()
+                    .scheduleTask(() -> {
+                        this.updateHotbar(player);
+                        return TaskSchedule.stop();
+                    }, TaskSchedule.seconds(1));
         });
 
         // we need to update the player's hotbar whenever they spawn
@@ -52,7 +56,7 @@ public class HotbarColorController implements Mechanic {
             ItemStack current = player.getInventory().getItemStack(changeHeldItemPacket.slot());
             Color newColor = Color.fromMaterial(current.material());
 
-            Util.log("Changing color from " + previousColor + " to " + newColor + " for " + player.getUsername() + ".");
+//            Util.log("Changing color from " + previousColor + " to " + newColor + " for " + player.getUsername() + ".");
 
             instance.scheduleNextTick(ignored -> this.updateHotbar(player));
         });
