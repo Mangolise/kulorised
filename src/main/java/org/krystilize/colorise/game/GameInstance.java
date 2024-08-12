@@ -1,20 +1,22 @@
 package org.krystilize.colorise.game;
 
+import net.minestom.server.coordinate.Point;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.event.trait.InstanceEvent;
 import net.minestom.server.instance.SharedInstance;
+import net.minestom.server.tag.Tag;
 import org.krystilize.colorise.Server;
 import org.krystilize.colorise.game.mechanic.Mechanic;
 import org.krystilize.colorise.queue.QueueSystem;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public abstract class GameInstance extends SharedInstance {
+
+    public static final Tag<Set<Point>> TOGGLED_BLOCKS = Tag.<Set<Point>>Transient("toggled_blocks").defaultValue(ConcurrentHashMap.newKeySet());
 
     protected final ColoriseGame game;
     protected final Player player1;

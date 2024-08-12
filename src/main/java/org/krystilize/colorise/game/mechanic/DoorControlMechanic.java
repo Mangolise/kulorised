@@ -8,10 +8,16 @@ import net.minestom.server.coordinate.Point;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.player.PlayerBlockInteractEvent;
 import net.minestom.server.instance.block.Block;
+import net.minestom.server.network.packet.server.SendablePacket;
+import net.minestom.server.network.packet.server.ServerPacket;
+import net.minestom.server.network.packet.server.play.BlockChangePacket;
+import net.minestom.server.utils.PacketUtils;
 import org.krystilize.colorise.Util;
 import org.krystilize.colorise.game.GameInstance;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -26,8 +32,13 @@ public class DoorControlMechanic implements Mechanic {
         Map<Point, Block> terracotta = analysis.TERRACOTTA.get();
 
         context.events().addListener(PlayerBlockInteractEvent.class, event -> {
-            Player player = event.getPlayer();
             GameInstance game = context.instance();
+
+            if (event.getInstance() != game) {
+                return;
+            }
+
+            Player player = event.getPlayer();
             Block block = event.getBlock();
 
             if (!Block.STONE_BUTTON.compare(block)) {
@@ -54,13 +65,26 @@ public class DoorControlMechanic implements Mechanic {
                     .filter(entry -> !entry.getKey().equals(controllerPos))
                     .collect(Collectors.toUnmodifiableSet());
 
+            Set<Point> toggled = game.getTag(GameInstance.TOGGLED_BLOCKS);
+
+            List<ServerPacket> packets = new ArrayList<>();
             for (var toggleEntry : togglePositions) {
                 Point togglePosition = toggleEntry.getKey();
                 Block toggleBlock = toggleEntry.getValue();
-                Block current = game.getBlock(togglePosition);
 
-                game.setBlock(togglePosition, current.isAir() ? toggleBlock : Block.AIR);
+                Block newBlock;
+                if (!toggled.contains(togglePosition)) {
+                    newBlock = Block.AIR;
+                    toggled.add(togglePosition);
+                } else {
+                    newBlock = toggleBlock;
+                    toggled.remove(togglePosition);
+                }
+                packets.add(new BlockChangePacket(togglePosition, newBlock));
             }
+
+            packets.forEach(packet -> PacketUtils.sendGroupedPacket(game.getPlayers(), packet));
+            game.setTag(GameInstance.TOGGLED_BLOCKS, toggled);
 
             Util.playerAction(player, "", "Door toggled", controllerPos);
         });
