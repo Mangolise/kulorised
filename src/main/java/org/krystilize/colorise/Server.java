@@ -13,7 +13,6 @@ import net.minestom.server.event.item.ItemDropEvent;
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
 import net.minestom.server.event.player.PlayerDisconnectEvent;
 import net.minestom.server.event.player.PlayerSpawnEvent;
-import net.minestom.server.event.server.ServerTickMonitorEvent;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.InstanceManager;
 import net.minestom.server.instance.LightingChunk;
@@ -24,7 +23,6 @@ import net.minestom.server.sound.SoundEvent;
 import org.krystilize.colorise.commands.GameModeCommand;
 import org.krystilize.colorise.commands.ObserveCommand;
 import org.krystilize.colorise.commands.JoinCommand;
-import org.krystilize.colorise.commands.ObserveCommand;
 import org.krystilize.colorise.queue.JoinInviteSystem;
 import org.krystilize.colorise.queue.QueueSystem;
 
@@ -48,7 +46,7 @@ public class Server {
         globalEventHandler.addListener(AsyncPlayerConfigurationEvent.class, event -> {
             final Player player = event.getPlayer();
             event.setSpawningInstance(lobbyInstance);
-            player.setRespawnPoint(new Pos(0.5, 36, 0.5));
+            player.setRespawnPoint(new Pos(0.5, 36, 0.5, -90f, 0f));
             Util.setPlayerGamemode(player, GameMode.ADVENTURE);
 
             if (Util.ADMINS.contains(player.getUsername())) {

@@ -20,21 +20,23 @@ public class BlockAnalysisMechanic implements Mechanic {
     }
 
 
-    public Analysis COLORED_BLOCKS = new Analysis();
-    public Analysis WINDOW_PANES = new Analysis();
+    public Analysis<Color> COLORED_BLOCKS = new Analysis<>();
+    public Analysis<Color> WINDOW_PANES = new Analysis<>();
+    public Analysis<Boolean> PRESSURE_PLATES = new Analysis<>();
 
 
     @Override
     public void setup(Context context) {
         COLORED_BLOCKS.blocks = InstanceAnalysis.scanForColoredBlocks(context.instance(), pathToRegions);
         WINDOW_PANES.blocks = InstanceAnalysis.scanForWindowPanes(context.instance(), pathToRegions);
+        PRESSURE_PLATES.blocks = InstanceAnalysis.scanForPressurePlates(context.instance(), pathToRegions);
     }
 
-    public static class Analysis {
+    public static class Analysis<T> {
 
-        private @Nullable Map<Point, Color> blocks = null;
+        private @Nullable Map<Point, T> blocks = null;
 
-        public @NotNull Map<Point, Color> get() {
+        public @NotNull Map<Point, T> get() {
             if (blocks == null) {
                 throw new IllegalStateException("Cannot access analysis before it is complete");
             }

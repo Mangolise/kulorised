@@ -37,7 +37,8 @@ public class Level0Instance extends GameInstance {
                 new BlockAnalysisMechanic(Path.of("worlds/level0/region")),
                 new ColoredBlockManagerMechanic(),
                 new HotbarColorController(),
-                new WindowsMechanic()
+                new WindowsMechanic(),
+                new CheckpointMechanic()
         );
     }
 }

@@ -54,6 +54,10 @@ public class Util {
                 !block.name().contains("black");
     }
 
+    public static boolean isPressurePlate(Block block) {
+        return block.equals(Block.LIGHT_WEIGHTED_PRESSURE_PLATE) || block.equals(Block.HEAVY_WEIGHTED_PRESSURE_PLATE);
+    }
+
     public static void setPlayerGamemode(Player player, GameMode gamemode) {
         switch (gamemode) {
             case CREATIVE -> {
