@@ -24,6 +24,7 @@ public class BlockAnalysisMechanic implements Mechanic {
     public Analysis<Color> COLORED_BLOCKS = new Analysis<>();
     public Analysis<Color> WINDOW_PANES = new Analysis<>();
     public Analysis<Boolean> PRESSURE_PLATES = new Analysis<>();
+    public Analysis<Block> TERRACOTTA = new Analysis<>();
 
 
     @Override
@@ -31,6 +32,7 @@ public class BlockAnalysisMechanic implements Mechanic {
         COLORED_BLOCKS.blocks = InstanceAnalysis.scanForColoredBlocks(context.instance(), pathToRegions);
         WINDOW_PANES.blocks = InstanceAnalysis.scanForWindowPanes(context.instance(), pathToRegions);
         PRESSURE_PLATES.blocks = InstanceAnalysis.scanForPressurePlates(context.instance(), pathToRegions);
+        TERRACOTTA.blocks = InstanceAnalysis.scanForTerracottaBlocks(context.instance(), pathToRegions);
     }
 
     public static class Analysis<T> {

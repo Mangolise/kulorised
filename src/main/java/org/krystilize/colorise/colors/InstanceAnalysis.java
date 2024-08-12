@@ -54,6 +54,10 @@ public class InstanceAnalysis {
         return Map.copyOf(plates);
     }
 
+    public static Map<Point, Block> scanForTerracottaBlocks(Instance instance, Path pathToRegions) {
+        return scanForBlocks(instance, pathToRegions, Util::isTerracotta);
+    }
+
 
     /**
      * Scans for blocks matching the given predicate.

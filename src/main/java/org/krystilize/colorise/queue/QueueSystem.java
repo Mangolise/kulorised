@@ -11,18 +11,23 @@ import net.minestom.server.instance.anvil.AnvilLoader;
 import net.minestom.server.sound.SoundEvent;
 import net.minestom.server.tag.Tag;
 import org.krystilize.colorise.Util;
+import org.krystilize.colorise.colors.InstanceAnalysis;
 import org.krystilize.colorise.event.PlayerJoinAcceptEvent;
 import org.krystilize.colorise.game.GameInfo;
 import org.krystilize.colorise.game.GameInstance;
 import org.krystilize.colorise.game.Level0Instance;
 
+import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 public record QueueSystem(Instance lobby) {
     public QueueSystem {
-        lobby.setTag(LEVEL0_INSTANCE, MinecraftServer.getInstanceManager().createInstanceContainer(new AnvilLoader("worlds/level0")));
+        InstanceContainer level0Instance = MinecraftServer.getInstanceManager().createInstanceContainer(new AnvilLoader("worlds/level0"));
+        InstanceAnalysis.scanForBlocks(level0Instance, Path.of("worlds/level0/region"), block -> false);
+
+        lobby.setTag(LEVEL0_INSTANCE, level0Instance);
         lobby.eventNode().addListener(InstanceTickEvent.class, event -> updateQueue());
 
         MinecraftServer.getGlobalEventHandler().addListener(PlayerJoinAcceptEvent.class, this::handleJoinAccept);
