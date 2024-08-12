@@ -79,9 +79,6 @@ public class CheckpointMechanic implements Mechanic {
                     break;
                 }
             }
-
-            player.setRespawnPoint(player.getRespawnPoint().withYaw(-90.0F));
-            player.sendActionBar(Component.text("Checkpoint Reached!"));
         });
     }
 }
