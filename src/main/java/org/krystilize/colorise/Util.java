@@ -58,6 +58,10 @@ public class Util {
         return block.equals(Block.LIGHT_WEIGHTED_PRESSURE_PLATE) || block.equals(Block.HEAVY_WEIGHTED_PRESSURE_PLATE);
     }
 
+    public static boolean isStainedGlass(Block block) {
+        return block.name().endsWith("_stained_glass");
+    }
+
     public static void setPlayerGamemode(Player player, GameMode gamemode) {
         switch (gamemode) {
             case CREATIVE -> {

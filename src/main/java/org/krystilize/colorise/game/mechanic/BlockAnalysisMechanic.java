@@ -1,6 +1,7 @@
 package org.krystilize.colorise.game.mechanic;
 
 import net.minestom.server.coordinate.Point;
+import net.minestom.server.instance.block.Block;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.krystilize.colorise.Color;

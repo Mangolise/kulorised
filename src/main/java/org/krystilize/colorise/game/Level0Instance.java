@@ -33,8 +33,8 @@ public class Level0Instance extends GameInstance {
     public List<Mechanic> mechanics() {
         return List.of(
                 new PlayerLeaveMechanic(),
-                new DeathMechanic(),
                 new BlockAnalysisMechanic(Path.of("worlds/level0/region")),
+                new RespawnMechanic(),
                 new ColoredBlockManagerMechanic(),
                 new HotbarColorController(),
                 new WindowsMechanic(),
