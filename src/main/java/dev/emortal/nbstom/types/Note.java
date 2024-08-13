@@ -51,7 +51,7 @@ public class Note {
         return Sound.sound(
                 SOUNDS[instrument],
                 source,
-                volume / 100f,
+                volume / 256f,
                 (float) Math.pow(2f, (key - 45) / 12f)
         );
     }
