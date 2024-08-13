@@ -14,7 +14,7 @@ import static net.minestom.server.command.builder.arguments.ArgumentType.Enum;
 
 public class GameModeCommand extends Command {
     public GameModeCommand() {
-        super("gamemode", "gm", "gmc", "gms", "gma");
+        super("gamemode", "gm", "gmc", "gms", "gma", "gmsp");
 
         setCondition((sender, s) -> sender instanceof Player player && Util.ADMINS.contains(player.getUsername()));
 
@@ -28,6 +28,7 @@ public class GameModeCommand extends Command {
         switch (context.getInput()) {
             case "gms", "gma" -> execute(sender, GameMode.ADVENTURE);
             case "gmc" -> execute(sender, GameMode.CREATIVE);
+            case "gmsp" -> execute(sender, GameMode.SPECTATOR);
             default -> sender.sendMessage("Invalid gamemode!");
         }
     }
@@ -52,8 +53,8 @@ public class GameModeCommand extends Command {
             gamemode = GameMode.ADVENTURE;
         }
 
-        if (gamemode != GameMode.ADVENTURE && gamemode != GameMode.CREATIVE) {
-            sender.sendMessage("You can only do adventure or creative!");
+        if (gamemode != GameMode.ADVENTURE && gamemode != GameMode.CREATIVE && gamemode != GameMode.SPECTATOR) {
+            sender.sendMessage("You can only do adventure or creative or spectator!");
             return;
         }
 
