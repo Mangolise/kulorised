@@ -2,6 +2,8 @@ package org.krystilize.colorise;
 
 import dev.emortal.nbstom.NBS;
 import dev.emortal.nbstom.NBSSong;
+import net.kyori.adventure.resource.ResourcePackInfo;
+import net.kyori.adventure.resource.ResourcePackRequest;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -40,8 +42,12 @@ import org.krystilize.colorise.queue.JoinInviteSystem;
 import org.krystilize.colorise.queue.QueueSystem;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.Objects;
+import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 public class Server {
 
@@ -73,6 +79,19 @@ public class Server {
 
             if (Util.ADMINS.contains(player.getUsername())) {
                 player.setPermissionLevel(4);
+            }
+
+            try {
+                player.sendResourcePacks(ResourcePackRequest.resourcePackRequest()
+                                .packs(ResourcePackInfo.resourcePackInfo()
+                                        .id(UUID.randomUUID())
+                                        .uri(new URI("https://github.com/KrystilizeNevaDies/ColoriseResourcePack/releases/download/latest/pack.zip"))
+//                                        .uri(new URI("http://localhost:8001/pack.zip"))
+                                        .computeHashAndBuild().get())
+                                .required(true)
+                        .build());
+            } catch (URISyntaxException | ExecutionException | InterruptedException e) {
+                throw new RuntimeException(e);
             }
         });
 
@@ -142,6 +161,7 @@ public class Server {
                     .append(Component
                     .text("\nby CoPokBl, Calcilore, EclipsedMango, Krystilize")
                     .color(TextColor.fromHexString("#a1a1a1"))));
+
             data.setMaxPlayer(6969);
             event.setResponseData(data);
         });
