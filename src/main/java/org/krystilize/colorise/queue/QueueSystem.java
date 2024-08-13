@@ -5,6 +5,7 @@ import net.kyori.adventure.text.Component;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.instance.InstanceTickEvent;
+import net.minestom.server.event.player.PlayerChatEvent;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.anvil.AnvilLoader;
@@ -31,6 +32,7 @@ public record QueueSystem(Instance lobby) {
         lobby.eventNode().addListener(InstanceTickEvent.class, event -> updateQueue());
 
         MinecraftServer.getGlobalEventHandler().addListener(PlayerJoinAcceptEvent.class, this::handleJoinAccept);
+        MinecraftServer.getGlobalEventHandler().addListener(PlayerChatEvent.class, this::handleChat);
     }
 
     private record Match(UUID player1, UUID player2) {
@@ -188,5 +190,18 @@ public record QueueSystem(Instance lobby) {
 
         // remove the join accept event
         JoinInviteSystem.remove(player.getUuid(), other.getUuid());
+    }
+
+    private void handleChat(PlayerChatEvent e) {
+        if (e.getPlayer().getInstance() instanceof GameInstance) {
+            return;  // Will be handled by the game chat
+        }
+
+        e.setCancelled(true);
+
+        String msg = "[LOBBY] " + e.getPlayer().getUsername() + ": " + e.getMessage();
+        for (Player p : lobby.getTag(QUEUED_PLAYERS)) {
+            p.sendMessage(msg);
+        }
     }
 }

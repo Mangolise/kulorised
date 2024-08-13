@@ -40,7 +40,8 @@ public class Level0Instance extends GameInstance {
                 new HotbarColorController(),
                 new WindowsMechanic(),
                 new DoorControlMechanic(),
-                new CheckpointMechanic()
+                new CheckpointMechanic(),
+                new GameChatMechanic()
         );
     }
 }
