@@ -35,16 +35,9 @@ public class LeaderboardCommand extends Command {
         for (int i = 0; i < top10.size(); i++) {
             GameCompletion completion = top10.get(i);
 
-            String colour = switch (i) {
-                case 0 -> "#fff200";
-                case 1 -> "#b0b0b0";
-                case 2 -> "#5c3400";
-                default -> "#80ffee";
-            };
-
             sender.sendMessage(Component
                     .text((i + 1) + ". " + completion.timeString() + " - " + completion.playersString())
-                    .color(TextColor.fromHexString(colour)));
+                    .color(TextColor.fromHexString(LeaderboardManager.getColourForPlace(i))));
         }
     }
 }

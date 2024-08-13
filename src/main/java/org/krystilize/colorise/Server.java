@@ -33,6 +33,7 @@ import org.krystilize.colorise.commands.JoinCommand;
 import org.krystilize.colorise.commands.ShoutCommand;
 import net.minestom.server.item.Material;
 import org.krystilize.colorise.commands.*;
+import org.krystilize.colorise.leaderboard.LeaderboardManager;
 import org.krystilize.colorise.queue.JoinInviteSystem;
 import org.krystilize.colorise.queue.QueueSystem;
 
@@ -152,6 +153,8 @@ public class Server {
         } else {
             System.out.println("Skins disabled.");
         }
+
+        LeaderboardManager.setup();
 
         MinecraftServer.getCommandManager().register(new GameModeCommand());
         MinecraftServer.getCommandManager().register(new ObserveCommand(queueSystem, lobbyInstance));
