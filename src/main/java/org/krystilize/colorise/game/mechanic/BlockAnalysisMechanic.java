@@ -23,16 +23,18 @@ public class BlockAnalysisMechanic implements Mechanic {
 
     public Analysis<Color> COLORED_BLOCKS = new Analysis<>();
     public Analysis<Color> WINDOW_PANES = new Analysis<>();
-    public Analysis<Boolean> PRESSURE_PLATES = new Analysis<>();
+    public Analysis<Boolean> CHECKPOINT_PLATES = new Analysis<>();
     public Analysis<Block> TERRACOTTA = new Analysis<>();
+    public Analysis<Boolean> WIN_PLATES = new Analysis<>();
 
 
     @Override
     public void setup(Context context) {
         COLORED_BLOCKS.blocks = InstanceAnalysis.scanForColoredBlocks(context.instance(), pathToRegions);
         WINDOW_PANES.blocks = InstanceAnalysis.scanForWindowPanes(context.instance(), pathToRegions);
-        PRESSURE_PLATES.blocks = InstanceAnalysis.scanForPressurePlates(context.instance(), pathToRegions);
+        CHECKPOINT_PLATES.blocks = InstanceAnalysis.scanForCheckpointPlates(context.instance(), pathToRegions);
         TERRACOTTA.blocks = InstanceAnalysis.scanForTerracottaBlocks(context.instance(), pathToRegions);
+        WIN_PLATES.blocks = InstanceAnalysis.scanForWinPlates(context.instance(), pathToRegions);
     }
 
     public static class Analysis<T> {
