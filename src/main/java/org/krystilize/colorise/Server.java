@@ -4,6 +4,7 @@ import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.util.HSVLike;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.advancements.FrameType;
 import net.minestom.server.coordinate.Pos;
@@ -16,10 +17,12 @@ import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
 import net.minestom.server.event.player.PlayerDisconnectEvent;
 import net.minestom.server.event.player.PlayerMoveEvent;
 import net.minestom.server.event.player.PlayerSpawnEvent;
+import net.minestom.server.event.server.ServerListPingEvent;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.InstanceManager;
 import net.minestom.server.instance.LightingChunk;
 import net.minestom.server.instance.anvil.AnvilLoader;
+import net.minestom.server.ping.ResponseData;
 import net.minestom.server.scoreboard.Team;
 import net.minestom.server.scoreboard.TeamManager;
 import net.minestom.server.sound.SoundEvent;
@@ -72,7 +75,7 @@ public class Server {
             if (!event.isFirstSpawn()) return;
 
             Player player = event.getPlayer();
-            queueSystem.addPlayer(player);
+            //queueSystem.addPlayer(player);
             player.setGlowing(true);
 
             Util.sendNotification(player, "Welcome to our game :)", NamedTextColor.YELLOW, FrameType.TASK, Material.GOLDEN_HELMET);
@@ -114,6 +117,26 @@ public class Server {
             }
         });
 
+        globalEventHandler.addListener(ServerListPingEvent.class, event -> {
+            ResponseData data = event.getResponseData();
+
+            // Title colour cycles based on system time so it is random
+            float randomHue = (System.currentTimeMillis() % 10000) / 10000f;
+            TextColor titleColor = TextColor.color(HSVLike.hsvLike(randomHue, 0.8f, 0.8f));
+
+            data.setDescription(Component
+                    .text("Kulorised")
+                    .color(titleColor)
+                    .append(Component.text(" - A game of colors")
+                    .color(TextColor.fromHexString("#a1a1a1")))
+                    .append(Component
+                    .text("\nby CoPokBl, Calcilore, EclipsedMango, Krystilize")
+                    .color(TextColor.fromHexString("#a1a1a1"))));
+            data.setMaxPlayer(6969);
+            event.setResponseData(data);
+        });
+
+        //noinspection UnstableApiUsage
         lobbyInstance.eventNode().addListener(PlayerMoveEvent.class, event -> {
             if (event.getPlayer().getPosition().y() < 0) {
                 event.getPlayer().teleport(SPAWN);

@@ -16,6 +16,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("UnstableApiUsage")
 public abstract class GameInstance extends SharedInstance {
 
     public static final Tag<Set<Point>> TOGGLED_BLOCKS = Tag.<Set<Point>>Transient("toggled_blocks").defaultValue(ConcurrentHashMap.newKeySet());
@@ -66,13 +67,15 @@ public abstract class GameInstance extends SharedInstance {
             loadedMechanics.remove(mechanic.getClass());
         }
 
-        // send all players back to the queue
-        if (player1.isOnline()) {
-            game.queue().addPlayer(player1);
-        }
-        if (player2.isOnline()) {
-            game.queue().addPlayer(player2);
-        }
+        // send all players back to the queue, or not
+//        if (player1.isOnline()) {
+//            game.queue().addPlayer(player1);
+//        }
+//        if (player2.isOnline()) {
+//            game.queue().addPlayer(player2);
+//        }
+        game.queue().resetPlayer(player1);
+        game.queue().resetPlayer(player2);
 
         broadcast(Component.text("Game has ended").color(TextColor.fromHexString("#eb4015")));
     }
