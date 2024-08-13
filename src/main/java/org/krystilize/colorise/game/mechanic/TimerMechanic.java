@@ -14,7 +14,7 @@ public class TimerMechanic implements Mechanic {
             GameInstance game = context.instance();
 
             for (Player player : game.getPlayers()) {
-                player.sendActionBar(Component.text("Time passed - " + game.getTimeString()));
+                player.sendActionBar(Component.text("Time passed - " + game.getElapsedDisplay()));
             }
         });
     }

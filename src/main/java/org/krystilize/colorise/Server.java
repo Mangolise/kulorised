@@ -4,6 +4,7 @@ import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.minestom.server.MinecraftServer;
+import net.minestom.server.advancements.FrameType;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.GameMode;
 import net.minestom.server.entity.Player;
@@ -17,13 +18,11 @@ import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.InstanceManager;
 import net.minestom.server.instance.LightingChunk;
 import net.minestom.server.instance.anvil.AnvilLoader;
+import net.minestom.server.item.Material;
 import net.minestom.server.scoreboard.Team;
 import net.minestom.server.scoreboard.TeamManager;
 import net.minestom.server.sound.SoundEvent;
-import org.krystilize.colorise.commands.GameModeCommand;
-import org.krystilize.colorise.commands.ObserveCommand;
-import org.krystilize.colorise.commands.JoinCommand;
-import org.krystilize.colorise.commands.ShoutCommand;
+import org.krystilize.colorise.commands.*;
 import org.krystilize.colorise.queue.JoinInviteSystem;
 import org.krystilize.colorise.queue.QueueSystem;
 
@@ -65,6 +64,8 @@ public class Server {
             Player player = event.getPlayer();
             queueSystem.addPlayer(player);
             player.setGlowing(true);
+
+            Util.sendNotification(player, "Welcome to our game :)", NamedTextColor.YELLOW, FrameType.TASK, Material.GOLDEN_HELMET);
         });
 
         {
@@ -105,6 +106,7 @@ public class Server {
         MinecraftServer.getCommandManager().register(new ObserveCommand(queueSystem));
         MinecraftServer.getCommandManager().register(new JoinCommand());
         MinecraftServer.getCommandManager().register(new ShoutCommand());
+        MinecraftServer.getCommandManager().register(new LeaderboardCommand());
 
         // Start the server on port 25565
         minecraftServer.start("0.0.0.0", 25565);

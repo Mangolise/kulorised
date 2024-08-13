@@ -5,6 +5,9 @@ import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
+import net.minestom.server.advancements.FrameType;
+import net.minestom.server.advancements.notifications.Notification;
+import net.minestom.server.advancements.notifications.NotificationCenter;
 import net.minestom.server.adventure.audience.Audiences;
 import net.minestom.server.command.CommandSender;
 import net.minestom.server.command.ConsoleSender;
@@ -13,6 +16,8 @@ import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.Player;
 import net.minestom.server.instance.Chunk;
 import net.minestom.server.instance.block.Block;
+import net.minestom.server.item.ItemStack;
+import net.minestom.server.item.Material;
 import net.minestom.server.scoreboard.Team;
 import net.minestom.server.sound.SoundEvent;
 import org.jetbrains.annotations.Nullable;
@@ -122,5 +127,36 @@ public class Util {
         } else {
             player.playSound(sound);
         }
+    }
+
+    public static void sendNotification(Player player, String text, NamedTextColor colour, FrameType type, Material icon) {
+        Notification notification = new Notification(
+                Component.text(text, colour),
+                type,
+                ItemStack.of(icon)
+        );
+        NotificationCenter.send(notification, player);
+    }
+
+    public static void sendNotification(Set<Player> players, String text, NamedTextColor colour, FrameType type, Material icon) {
+        Notification notification = new Notification(
+                Component.text(text, colour),
+                type,
+                ItemStack.of(icon)
+        );
+        NotificationCenter.send(notification, players);
+    }
+
+    public static void broadcast(Component msg) {
+        Audiences.all().sendMessage(msg);
+    }
+
+    // millis to MM:SS.SS
+    public static String getFormattedTime(long time) {
+        long minutes = time / 60000;
+        long seconds = (time % 60000) / 1000;
+        long millis = (time % 1000) / 10;
+
+        return String.format("%02d:%02d.%02d", minutes, seconds, millis);
     }
 }
