@@ -9,9 +9,6 @@ public interface Mechanic {
     default void setup(Context context) {
     }
 
-    default void stop(Context context) {
-    }
-
     interface Context {
         ColoriseGame game();
         EventNode<InstanceEvent> events();

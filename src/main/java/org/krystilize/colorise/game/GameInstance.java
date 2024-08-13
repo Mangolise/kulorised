@@ -64,27 +64,11 @@ public abstract class GameInstance extends SharedInstance {
             throw new IllegalStateException("Cannot stop a game that has not started");
         }
 
-        Map<Class<? extends Mechanic>, Mechanic> loadedMechanics = mechanics().stream()
-                .collect(Collectors.toMap(Mechanic::getClass, m -> m));
-        Mechanic.Context context = new MechanicsContextImpl(game, this.eventNode(), this, loadedMechanics);
-
-        // unload all mechanics
-        for (Mechanic mechanic : this.mechanics().reversed()) {
-            mechanic.stop(context);
-            loadedMechanics.remove(mechanic.getClass());
-        }
+        broadcast(Component.text("Game has ended").color(TextColor.fromHexString("#eb4015")));
 
         // send all players back to the queue, or not
-//        if (player1.isOnline()) {
-//            game.queue().addPlayer(player1);
-//        }
-//        if (player2.isOnline()) {
-//            game.queue().addPlayer(player2);
-//        }
         game.queue().resetPlayer(player1);
         game.queue().resetPlayer(player2);
-
-        broadcast(Component.text("Game has ended").color(TextColor.fromHexString("#eb4015")));
     }
 
     public void broadcast(Component msg) {
