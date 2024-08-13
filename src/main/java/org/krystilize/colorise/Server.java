@@ -28,7 +28,7 @@ import org.krystilize.colorise.queue.QueueSystem;
 
 public class Server {
 
-    public static final Pos SPAWN = new Pos(0.5, 36, 0.5, -90f, 0f);
+    public static final Pos SPAWN = new Pos(0.5, 37, 0.5, -90f, 0f);
 
     public static void main(String[] args) {
         // Initialization
