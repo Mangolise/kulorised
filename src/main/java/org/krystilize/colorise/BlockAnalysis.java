@@ -6,7 +6,6 @@ import net.minestom.server.instance.block.Block;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.krystilize.colorise.colors.InstanceAnalysis;
-import org.krystilize.colorise.game.mechanic.Mechanic;
 
 import java.nio.file.Path;
 import java.util.Collections;
@@ -36,6 +35,7 @@ public class BlockAnalysis {
         // checkpoint plates, and win plates need to be removed
         CHECKPOINT_PLATES.get().forEach((point, ignored) -> instance.setBlock(point, Block.AIR));
         WIN_PLATES.get().forEach((point, ignored) -> instance.setBlock(point, Block.AIR));
+        COLORED_BLOCKS.get().forEach((point, ignored) -> instance.setBlock(point, Block.AIR));
     }
 
     public static class Analysis<T> {
