@@ -1,6 +1,6 @@
 package org.krystilize.colorise;
 
-import dev.emortal.nbstom.NBS;
+import ch.qos.logback.classic.spi.LogbackServiceProvider;
 import dev.emortal.nbstom.NBSSong;
 import net.kyori.adventure.resource.ResourcePackInfo;
 import net.kyori.adventure.resource.ResourcePackRequest;
@@ -8,9 +8,13 @@ import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.serializer.gson.impl.JSONComponentSerializerProviderImpl;
 import net.kyori.adventure.util.HSVLike;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.advancements.FrameType;
+import net.minestom.server.adventure.provider.MinestomComponentLoggerProvider;
+import net.minestom.server.adventure.provider.MinestomGsonComponentSerializerProvider;
+import net.minestom.server.adventure.provider.MinestomLegacyComponentSerializerProvider;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.GameMode;
 import net.minestom.server.entity.Player;
@@ -57,6 +61,13 @@ public class Server {
     public static void main(String[] args) throws IOException {
         // Initialization
         MinecraftServer minecraftServer = MinecraftServer.init();
+
+        // Use some service providers here so they are not minimized
+        System.out.println("Using logback: " + new LogbackServiceProvider());
+        System.out.println("Using component serializer: " + new MinestomComponentLoggerProvider());
+        System.out.println("Using legacy component serializer: " + new MinestomLegacyComponentSerializerProvider());
+        System.out.println("Using gson component serializer: " + new MinestomGsonComponentSerializerProvider());
+        System.out.println("Using json component serializer: " + new JSONComponentSerializerProviderImpl());
 
         // Register all sign blocks
         MinecraftServer.getBlockManager().registerHandler("minecraft:sign", () -> SignBlock.INSTANCE);
