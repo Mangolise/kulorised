@@ -20,10 +20,15 @@ import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.InstanceManager;
 import net.minestom.server.instance.LightingChunk;
 import net.minestom.server.instance.anvil.AnvilLoader;
-import net.minestom.server.item.Material;
 import net.minestom.server.scoreboard.Team;
 import net.minestom.server.scoreboard.TeamManager;
 import net.minestom.server.sound.SoundEvent;
+import org.krystilize.colorise.blocks.SignBlock;
+import org.krystilize.colorise.commands.GameModeCommand;
+import org.krystilize.colorise.commands.ObserveCommand;
+import org.krystilize.colorise.commands.JoinCommand;
+import org.krystilize.colorise.commands.ShoutCommand;
+import net.minestom.server.item.Material;
 import org.krystilize.colorise.commands.*;
 import org.krystilize.colorise.queue.JoinInviteSystem;
 import org.krystilize.colorise.queue.QueueSystem;
@@ -37,6 +42,9 @@ public class Server {
     public static void main(String[] args) {
         // Initialization
         MinecraftServer minecraftServer = MinecraftServer.init();
+
+        // Register all sign blocks
+        MinecraftServer.getBlockManager().registerHandler("minecraft:sign", () -> SignBlock.INSTANCE);
 
         // Create the instance
         InstanceManager instanceManager = MinecraftServer.getInstanceManager();
