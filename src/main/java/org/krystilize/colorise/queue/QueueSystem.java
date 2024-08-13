@@ -2,6 +2,8 @@ package org.krystilize.colorise.queue;
 
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.instance.InstanceTickEvent;
@@ -13,7 +15,6 @@ import net.minestom.server.sound.SoundEvent;
 import net.minestom.server.tag.Tag;
 import org.krystilize.colorise.BlockAnalysis;
 import org.krystilize.colorise.Server;
-import org.krystilize.colorise.Util;
 import org.krystilize.colorise.event.PlayerJoinAcceptEvent;
 import org.krystilize.colorise.game.GameInfo;
 import org.krystilize.colorise.game.GameInstance;
@@ -145,14 +146,16 @@ public record QueueSystem(Instance lobby) {
         p1.playSound(startSound);
         p2.playSound(startSound);
 
-        Util.log("Starting game with " + p1.getUsername() + " and " + p2.getUsername());
-
         InstanceContainer level0Instance = lobby.getTag(LEVEL0_INSTANCE);
 
         GameInfo info = new GameInfo(List.of(p1, p2), level0Instance);
         MinecraftServer.getInstanceManager().registerInstance(level0Instance);
         Level0Instance level0 = new Level0Instance(this, info);
         MinecraftServer.getInstanceManager().registerSharedInstance(level0);
+
+        Component baseMsg = Component.text("Starting game with ").color(TextColor.fromHexString("#15eb6e"));
+        p1.sendMessage(baseMsg.append(Component.text(p2.getUsername()).color(TextColor.fromHexString("#15eb6e")).decorate(TextDecoration.BOLD)));
+        p2.sendMessage(baseMsg.append(Component.text(p1.getUsername()).color(TextColor.fromHexString("#15eb6e")).decorate(TextDecoration.BOLD)));
 
         // add players to the game, then start it
         CompletableFuture.allOf(p1.setInstance(level0), p2.setInstance(level0))
@@ -201,7 +204,7 @@ public record QueueSystem(Instance lobby) {
         e.setCancelled(true);
 
         String msg = "[LOBBY] " + e.getPlayer().getUsername() + ": " + e.getMessage();
-        for (Player p : lobby.getTag(QUEUED_PLAYERS)) {
+        for (Player p : lobby.getPlayers()) {
             p.sendMessage(msg);
         }
     }

@@ -6,7 +6,6 @@ import net.minestom.server.event.EventNode;
 import net.minestom.server.event.trait.InstanceEvent;
 import net.minestom.server.instance.SharedInstance;
 import net.minestom.server.tag.Tag;
-import org.krystilize.colorise.Server;
 import org.krystilize.colorise.Util;
 import org.krystilize.colorise.game.mechanic.Mechanic;
 import org.krystilize.colorise.queue.QueueSystem;

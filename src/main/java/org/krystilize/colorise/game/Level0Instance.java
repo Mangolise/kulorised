@@ -19,13 +19,11 @@ public class Level0Instance extends GameInstance {
             Color color = PLAYER1_COLORS.get(i);
             player1.getInventory().setItemStack(i, ItemStack.of(color.material()));
         }
-        player1.sendMessage("You are player 1");
 
         for (int i = 0; i < PLAYER2_COLORS.size(); i++) {
             Color color = PLAYER2_COLORS.get(i);
             player2.getInventory().setItemStack(i, ItemStack.of(color.material()));
         }
-        player2.sendMessage("You are player 2");
     }
 
     @Override
