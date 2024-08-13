@@ -33,7 +33,7 @@ public class DoorControlMechanic implements Mechanic {
             Player player = event.getPlayer();
             Block block = event.getBlock();
 
-            if (!Block.STONE_BUTTON.compare(block)) {
+            if (!Block.STONE_BUTTON.compare(block) || player.isSneaking()) {
                 return;
             }
 
