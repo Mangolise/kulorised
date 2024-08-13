@@ -55,8 +55,7 @@ public class WinMechanic implements Mechanic {
                         wonPlayers.add(event.getPlayer().getUuid());
 
                         if (wonPlayers.size() == 2) {
-                            doWin(instance.getPlayer1());
-                            doWin(instance.getPlayer2());
+                            doWin(instance);
 
                             MinecraftServer.getSchedulerManager().scheduleTask(() -> {
                                 instance.stop();
@@ -69,11 +68,14 @@ public class WinMechanic implements Mechanic {
         });
     }
 
-    private void doWin(Player player) {
-        Title.Times times = Title.Times.times(Duration.ofMillis(100), Duration.ofMillis(300), Duration.ofMillis(100));
-        player.showTitle(Title.title(Component.text("You Won!"), Component.empty(), times));
-        Sound sound = Sound.sound(SoundEvent.ENTITY_ENDER_DRAGON_DEATH, Sound.Source.BLOCK, 0.7f, 1);
+    private void doWin(GameInstance game) {
+        Title.Times times = Title.Times.times(Duration.ofMillis(100), Duration.ofMillis(5000), Duration.ofMillis(100));
+        Component timeTaken = Component.text("You took " + game.getTimeString() + " to win the game");
+        Sound sound = Sound.sound(SoundEvent.ENTITY_ENDER_DRAGON_DEATH, Sound.Source.BLOCK, 0.4f, 1);
 
-        player.playSound(sound);
+        for (Player player : game.getPlayers()) {
+            player.showTitle(Title.title(Component.text("You Won!"), timeTaken, times));
+            player.playSound(sound);
+        }
     }
 }

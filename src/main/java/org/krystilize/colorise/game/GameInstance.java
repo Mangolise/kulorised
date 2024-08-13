@@ -84,6 +84,16 @@ public abstract class GameInstance extends SharedInstance {
         return player2;
     }
 
+    public String getTimeString() {
+        long ticks = this.getWorldAge();
+        long seconds = ticks / 20;
+
+        String displayMinutes = String.format("%02d", seconds / 60);
+        String displaySeconds = String.format("%02d", seconds % 60);
+
+        return displayMinutes + ":" + displaySeconds;
+    }
+
     private record MechanicsContextImpl(ColoriseGame game, EventNode<InstanceEvent> events, GameInstance instance,
                                         Map<Class<? extends Mechanic>, Mechanic> loadedMechanics) implements Mechanic.Context {
 

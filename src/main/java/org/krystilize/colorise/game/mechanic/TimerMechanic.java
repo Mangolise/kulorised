@@ -14,13 +14,7 @@ public class TimerMechanic implements Mechanic {
             GameInstance game = context.instance();
 
             for (Player player : game.getPlayers()) {
-
-                long seconds = (System.currentTimeMillis() - startTime) / 1000;
-
-                String displayMinutes = String.format("%02d", seconds / 60);
-                String displaySeconds = String.format("%02d", seconds % 60);
-
-                player.sendActionBar(Component.text("Time passed - " + displayMinutes + ":" + displaySeconds));
+                player.sendActionBar(Component.text("Time passed - " + game.getTimeString()));
             }
         });
     }
