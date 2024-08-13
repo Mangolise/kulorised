@@ -95,15 +95,16 @@ public record QueueSystem(Instance lobby) {
             players.add(player);
             return players;
         });
-
-        resetPlayer(player);
     }
 
     public void resetPlayer(Player player) {
         // Reset their pos and clear inventory
         if (player.getInstance() != lobby) player.setInstance(lobby);
         player.setRespawnPoint(Server.SPAWN);
-        player.teleport(player.getRespawnPoint());
+        MinecraftServer.getSchedulerManager().scheduleNextTick(() -> {
+            if (player.getInstance() == null) return;
+            player.teleport(player.getRespawnPoint());
+        });
         player.getInventory().clear();
     }
 
