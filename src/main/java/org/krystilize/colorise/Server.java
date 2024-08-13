@@ -27,6 +27,8 @@ import org.krystilize.colorise.commands.ShoutCommand;
 import org.krystilize.colorise.queue.JoinInviteSystem;
 import org.krystilize.colorise.queue.QueueSystem;
 
+import java.util.Objects;
+
 public class Server {
 
     public static final Pos SPAWN = new Pos(0.5, 37, 0.5, -90f, 0f);
@@ -90,6 +92,14 @@ public class Server {
         });
 
         JoinInviteSystem.start();
+
+        boolean enableSkins = Objects.equals(System.getenv("ENABLE_SKINS"), "true");
+        if (enableSkins) {
+            new SkinHandler(globalEventHandler);  // Start skin handler
+            System.out.println("Skins enabled.");
+        } else {
+            System.out.println("Skins disabled.");
+        }
 
         MinecraftServer.getCommandManager().register(new GameModeCommand());
         MinecraftServer.getCommandManager().register(new ObserveCommand(queueSystem));
