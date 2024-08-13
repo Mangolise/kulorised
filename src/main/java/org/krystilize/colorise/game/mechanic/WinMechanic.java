@@ -10,10 +10,7 @@ import net.minestom.server.advancements.FrameType;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.player.PlayerMoveEvent;
-import net.minestom.server.instance.block.Block;
 import net.minestom.server.item.Material;
-import net.minestom.server.network.packet.server.SendablePacket;
-import net.minestom.server.network.packet.server.play.BlockChangePacket;
 import net.minestom.server.sound.SoundEvent;
 import net.minestom.server.timer.TaskSchedule;
 import org.krystilize.colorise.Util;
@@ -38,14 +35,6 @@ public class WinMechanic implements Mechanic {
     private void doSetup(GameInstance instance, Context context) {
         Map<Point, Boolean> winPlates = BlockAnalysis.WIN_PLATES.get();
         Set<UUID> wonPlayers = Collections.synchronizedSet(new HashSet<>());
-        Set<SendablePacket> packets = new HashSet<>();
-
-        for (Point platePos : winPlates.keySet()) {
-            packets.add(new BlockChangePacket(platePos, Block.AIR));
-        }
-
-        instance.getPlayer1().sendPackets(packets);
-        instance.getPlayer2().sendPackets(packets);
 
         context.events().addListener(PlayerMoveEvent.class, (event) -> {
             if (wonPlayers.size() >= 2) {
