@@ -193,6 +193,7 @@ public class Server {
         MinecraftServer.getCommandManager().register(new ShoutCommand());
         MinecraftServer.getCommandManager().register(new LeaderboardCommand());
         MinecraftServer.getCommandManager().register(new ToggleScoreboardCommand());
+        MinecraftServer.getCommandManager().register(new LeaveCommand());
 
         // Start the server on port 25565
         minecraftServer.start("0.0.0.0", 25565);
