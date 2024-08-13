@@ -14,13 +14,11 @@ import net.minestom.server.tag.Tag;
 import org.krystilize.colorise.BlockAnalysis;
 import org.krystilize.colorise.Server;
 import org.krystilize.colorise.Util;
-import org.krystilize.colorise.colors.InstanceAnalysis;
 import org.krystilize.colorise.event.PlayerJoinAcceptEvent;
 import org.krystilize.colorise.game.GameInfo;
 import org.krystilize.colorise.game.GameInstance;
 import org.krystilize.colorise.game.Level0Instance;
 
-import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -70,8 +68,6 @@ public record QueueSystem(Instance lobby) {
     public void addPlayer(Player player) {
         if (isExempt(player)) return;
 
-        Util.log(player.getUsername() + " joined the queue");
-
         // Add the player to the queue
         lobby.updateTag(QUEUED_PLAYERS, players -> {
             if (players.contains(player)) return players;
@@ -80,14 +76,13 @@ public record QueueSystem(Instance lobby) {
         });
 
         // Reset their pos and clear inventory
+        if (player.getInstance() != lobby) player.setInstance(lobby);
         player.setRespawnPoint(Server.SPAWN);
         player.teleport(player.getRespawnPoint());
         player.getInventory().clear();
     }
 
     public void removePlayer(Player player) {
-        Util.log(player.getUsername() + " left the queue");
-
         // Remove the player from the queue
         lobby.updateTag(QUEUED_PLAYERS, players -> {
             players.remove(player);
