@@ -26,6 +26,7 @@ import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.InstanceManager;
 import net.minestom.server.instance.LightingChunk;
 import net.minestom.server.instance.anvil.AnvilLoader;
+import net.minestom.server.item.ItemStack;
 import net.minestom.server.ping.ResponseData;
 import net.minestom.server.scoreboard.Team;
 import net.minestom.server.scoreboard.TeamManager;
@@ -99,10 +100,11 @@ public class Server {
 
         globalEventHandler.addListener(PlayerSpawnEvent.class, event -> {
             if (!event.isFirstSpawn()) return;
-
             Player player = event.getPlayer();
+
             //queueSystem.addPlayer(player);
             player.setGlowing(true);
+            player.setHelmet(ItemStack.of(Material.LEATHER_HELMET));
 
             // Play music
             Util.loopSong(song, player);
