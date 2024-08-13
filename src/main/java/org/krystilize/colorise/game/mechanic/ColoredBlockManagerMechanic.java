@@ -8,6 +8,7 @@ import net.minestom.server.network.packet.server.SendablePacket;
 import net.minestom.server.network.packet.server.play.BlockChangePacket;
 import net.minestom.server.tag.Tag;
 import org.jetbrains.annotations.UnknownNullability;
+import org.krystilize.colorise.BlockAnalysis;
 import org.krystilize.colorise.Color;
 import org.krystilize.colorise.Util;
 import org.krystilize.colorise.entity.BlockOutlineEntityGroup;
@@ -35,7 +36,7 @@ public class ColoredBlockManagerMechanic implements Mechanic {
     @Override
     public void setup(Context context) {
         instance = context.instance();
-        blocks = context.mechanic(BlockAnalysisMechanic.class).COLORED_BLOCKS.get();
+        blocks = BlockAnalysis.COLORED_BLOCKS.get();
 
         Util.log("ColoredBlocks created with " + blocks.size() + " blocks.");
         Map<Point, BlockOutlineEntityGroup> displayEntities = instance.getTag(INSTANCE_DISPLAY_ENTITIES);

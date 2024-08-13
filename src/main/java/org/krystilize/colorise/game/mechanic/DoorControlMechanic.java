@@ -1,21 +1,16 @@
 package org.krystilize.colorise.game.mechanic;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.title.Title;
-import net.kyori.adventure.title.TitlePart;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.player.PlayerBlockInteractEvent;
 import net.minestom.server.instance.block.Block;
-import net.minestom.server.network.packet.server.SendablePacket;
 import net.minestom.server.network.packet.server.ServerPacket;
 import net.minestom.server.network.packet.server.play.BlockChangePacket;
 import net.minestom.server.utils.PacketUtils;
+import org.krystilize.colorise.BlockAnalysis;
 import org.krystilize.colorise.Util;
 import org.krystilize.colorise.game.GameInstance;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,10 +21,7 @@ public class DoorControlMechanic implements Mechanic {
 
     @Override
     public void setup(Context context) {
-
-        BlockAnalysisMechanic analysis = context.mechanic(BlockAnalysisMechanic.class);
-
-        Map<Point, Block> terracotta = analysis.TERRACOTTA.get();
+        Map<Point, Block> terracotta = BlockAnalysis.TERRACOTTA.get();
 
         context.events().addListener(PlayerBlockInteractEvent.class, event -> {
             GameInstance game = context.instance();

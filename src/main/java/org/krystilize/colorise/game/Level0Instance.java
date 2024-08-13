@@ -5,7 +5,6 @@ import org.krystilize.colorise.Color;
 import org.krystilize.colorise.game.mechanic.*;
 import org.krystilize.colorise.queue.QueueSystem;
 
-import java.nio.file.Path;
 import java.util.List;
 
 public class Level0Instance extends GameInstance {
@@ -34,7 +33,6 @@ public class Level0Instance extends GameInstance {
         return List.of(
                 new TimerMechanic(),
                 new PlayerLeaveMechanic(),
-                new BlockAnalysisMechanic(Path.of("worlds/level0/region")),
                 new RespawnMechanic(),
                 new ColoredBlockManagerMechanic(),
                 new HotbarColorController(),

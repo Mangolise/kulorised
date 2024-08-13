@@ -14,6 +14,7 @@ import net.minestom.server.network.packet.server.SendablePacket;
 import net.minestom.server.network.packet.server.play.BlockChangePacket;
 import net.minestom.server.timer.TaskSchedule;
 import org.jetbrains.annotations.UnknownNullability;
+import org.krystilize.colorise.BlockAnalysis;
 import org.krystilize.colorise.Util;
 import org.krystilize.colorise.game.GameInstance;
 
@@ -32,7 +33,7 @@ public class CheckpointMechanic implements Mechanic {
     private void doSetup(GameInstance instance, Context context) {
         checkpoints = new ConcurrentHashMap<>();
 
-        Map<Point, Boolean> pressurePlates = context.mechanic(BlockAnalysisMechanic.class).CHECKPOINT_PLATES.get();
+        Map<Point, Boolean> pressurePlates = BlockAnalysis.CHECKPOINT_PLATES.get();
 
         List<Point> spawnPlates = new ArrayList<>();
         Set<SendablePacket> packets = new HashSet<>();

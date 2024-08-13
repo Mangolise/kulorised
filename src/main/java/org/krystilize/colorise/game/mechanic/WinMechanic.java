@@ -17,6 +17,7 @@ import net.minestom.server.network.packet.server.play.BlockChangePacket;
 import net.minestom.server.sound.SoundEvent;
 import net.minestom.server.timer.TaskSchedule;
 import org.krystilize.colorise.Util;
+import org.krystilize.colorise.BlockAnalysis;
 import org.krystilize.colorise.game.GameInstance;
 import org.krystilize.colorise.leaderboard.LeaderboardManager;
 
@@ -35,7 +36,7 @@ public class WinMechanic implements Mechanic {
     }
 
     private void doSetup(GameInstance instance, Context context) {
-        Map<Point, Boolean> winPlates = context.mechanic(BlockAnalysisMechanic.class).WIN_PLATES.get();
+        Map<Point, Boolean> winPlates = BlockAnalysis.WIN_PLATES.get();
         Set<UUID> wonPlayers = Collections.synchronizedSet(new HashSet<>());
         Set<SendablePacket> packets = new HashSet<>();
 

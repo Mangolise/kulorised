@@ -11,6 +11,8 @@ import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.anvil.AnvilLoader;
 import net.minestom.server.sound.SoundEvent;
 import net.minestom.server.tag.Tag;
+import org.krystilize.colorise.BlockAnalysis;
+import org.krystilize.colorise.Server;
 import org.krystilize.colorise.Util;
 import org.krystilize.colorise.colors.InstanceAnalysis;
 import org.krystilize.colorise.event.PlayerJoinAcceptEvent;
@@ -26,7 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public record QueueSystem(Instance lobby) {
     public QueueSystem {
         InstanceContainer level0Instance = MinecraftServer.getInstanceManager().createInstanceContainer(new AnvilLoader("worlds/level0"));
-        InstanceAnalysis.scanForBlocks(level0Instance, Path.of("worlds/level0/region"), block -> false);
+        BlockAnalysis.analyse(level0Instance);
 
         lobby.setTag(LEVEL0_INSTANCE, level0Instance);
         lobby.eventNode().addListener(InstanceTickEvent.class, event -> updateQueue());
@@ -78,6 +80,7 @@ public record QueueSystem(Instance lobby) {
         });
 
         // Reset their pos and clear inventory
+        player.setRespawnPoint(Server.SPAWN);
         player.teleport(player.getRespawnPoint());
         player.getInventory().clear();
     }
