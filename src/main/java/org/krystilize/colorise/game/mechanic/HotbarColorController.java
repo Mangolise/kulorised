@@ -53,6 +53,17 @@ public class HotbarColorController implements Mechanic {
 //            Color newColor = Color.fromMaterial(current.material());
 //            Util.log("Changing color from " + previousColor + " to " + newColor + " for " + player.getUsername() + ".");
 
+            ItemStack newItem = player.getInventory().getItemStack(changeHeldItemPacket.slot());
+            if (newItem.isAir()) {
+                event.setCancelled(true);
+                // go to the opposite of the player's current slot
+                if (player.getHeldSlot() == 0) {
+                    player.setHeldItemSlot((byte) 1);
+                } else {
+                    player.setHeldItemSlot((byte) 0);
+                }
+            }
+
             instance.scheduleNextTick(ignored -> this.updateHotbar(player));
         });
     }
