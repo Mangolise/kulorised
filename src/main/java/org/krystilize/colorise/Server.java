@@ -1,5 +1,7 @@
 package org.krystilize.colorise;
 
+import dev.emortal.nbstom.NBS;
+import dev.emortal.nbstom.NBSSong;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -37,13 +39,15 @@ import org.krystilize.colorise.leaderboard.LeaderboardManager;
 import org.krystilize.colorise.queue.JoinInviteSystem;
 import org.krystilize.colorise.queue.QueueSystem;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Objects;
 
 public class Server {
 
     public static final Pos SPAWN = new Pos(0.5, 37, 0.5, 90f, 0f);
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         // Initialization
         MinecraftServer minecraftServer = MinecraftServer.init();
 
@@ -72,12 +76,17 @@ public class Server {
             }
         });
 
+        NBSSong song = new NBSSong(Path.of("MiiChannelTheme.nbs"));
+
         globalEventHandler.addListener(PlayerSpawnEvent.class, event -> {
             if (!event.isFirstSpawn()) return;
 
             Player player = event.getPlayer();
             //queueSystem.addPlayer(player);
             player.setGlowing(true);
+
+            // Play music
+            Util.loopSong(song, player);
 
             Util.sendNotification(player, "Welcome to our game :)", NamedTextColor.YELLOW, FrameType.TASK, Material.GOLDEN_HELMET);
 
