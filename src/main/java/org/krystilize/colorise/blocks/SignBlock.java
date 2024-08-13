@@ -18,6 +18,6 @@ public enum SignBlock implements BlockHandler {
 
     @Override
     public @NotNull Collection<Tag<?>> getBlockEntityTags() {
-        return Set.of(Tag.Component("front_text"), Tag.Component("back_text"), Tag.Boolean("is_waxed"));
+        return Set.of(Tag.Byte("is_waxed"), Tag.NBT("front_text"), Tag.NBT("back_text"));
     }
 }
