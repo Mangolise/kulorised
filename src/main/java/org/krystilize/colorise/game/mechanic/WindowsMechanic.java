@@ -8,6 +8,7 @@ import net.minestom.server.instance.block.Block;
 import net.minestom.server.network.packet.server.SendablePacket;
 import net.minestom.server.network.packet.server.play.BlockChangePacket;
 import org.jetbrains.annotations.UnknownNullability;
+import org.krystilize.colorise.BlockAnalysis;
 import org.krystilize.colorise.Color;
 import org.krystilize.colorise.game.Team;
 
@@ -22,7 +23,7 @@ public class WindowsMechanic implements Mechanic {
     @Override
     public void setup(Context context) {
         instance = context.instance();
-        blocks = context.mechanic(BlockAnalysisMechanic.class).WINDOW_PANES.get();
+        blocks = BlockAnalysis.WINDOW_PANES.get();
 
         context.events().addListener(PlayerTickEvent.class, event -> {
             long age = event.getInstance().getWorldAge();

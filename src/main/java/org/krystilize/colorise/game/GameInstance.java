@@ -68,11 +68,9 @@ public abstract class GameInstance extends SharedInstance {
         // send all players back to the queue
         if (player1.isOnline()) {
             game.queue().addPlayer(player1);
-            player1.setInstance(game.queue().lobby(), Server.SPAWN);
         }
         if (player2.isOnline()) {
             game.queue().addPlayer(player2);
-            player2.setInstance(game.queue().lobby(), Server.SPAWN);
         }
     }
 
