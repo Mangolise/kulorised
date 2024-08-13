@@ -5,6 +5,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.minestom.server.MinecraftServer;
+import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.instance.InstanceTickEvent;
 import net.minestom.server.event.player.PlayerBlockInteractEvent;
@@ -153,7 +154,7 @@ public record QueueSystem(Instance lobby) {
             }
         }
 
-        outerCondition: if (queudPlayers.size() >= 2) {
+        if (queudPlayers.size() >= 2) {
 
             // start a game with the first two players that are not part of a forced match
             Player p1 = queudPlayers.stream().filter(player -> forcedMatches.stream().noneMatch(match -> match.isMatched(player))).findFirst().orElse(null);
@@ -189,7 +190,8 @@ public record QueueSystem(Instance lobby) {
         p2.sendMessage(baseMsg.append(Component.text(p1.getUsername()).color(TextColor.fromHexString("#15eb6e")).decorate(TextDecoration.BOLD)));
 
         // add players to the game, then start it
-        CompletableFuture.allOf(p1.setInstance(level0), p2.setInstance(level0))
+        Pos spawnPos = Server.SPAWN.withYaw(270f);
+        CompletableFuture.allOf(p1.setInstance(level0, spawnPos), p2.setInstance(level0, spawnPos))
                 .thenRun(level0::start);
     }
 
