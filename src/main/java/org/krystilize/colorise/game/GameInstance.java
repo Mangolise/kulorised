@@ -7,6 +7,7 @@ import net.minestom.server.event.trait.InstanceEvent;
 import net.minestom.server.instance.SharedInstance;
 import net.minestom.server.tag.Tag;
 import org.krystilize.colorise.Server;
+import org.krystilize.colorise.Util;
 import org.krystilize.colorise.game.mechanic.Mechanic;
 import org.krystilize.colorise.queue.QueueSystem;
 
@@ -82,14 +83,13 @@ public abstract class GameInstance extends SharedInstance {
         return player2;
     }
 
-    public String getTimeString() {
+    public String getElapsedDisplay() {
+        return Util.getFormattedTime(getElapsedMillis());
+    }
+
+    public long getElapsedMillis() {
         long ticks = this.getWorldAge();
-        long seconds = ticks / 20;
-
-        String displayMinutes = String.format("%02d", seconds / 60);
-        String displaySeconds = String.format("%02d", seconds % 60);
-
-        return displayMinutes + ":" + displaySeconds;
+        return ticks * 50;
     }
 
     private record MechanicsContextImpl(ColoriseGame game, EventNode<InstanceEvent> events, GameInstance instance,
