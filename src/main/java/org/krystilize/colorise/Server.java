@@ -23,6 +23,7 @@ import net.minestom.server.sound.SoundEvent;
 import org.krystilize.colorise.commands.GameModeCommand;
 import org.krystilize.colorise.commands.ObserveCommand;
 import org.krystilize.colorise.commands.JoinCommand;
+import org.krystilize.colorise.commands.ShoutCommand;
 import org.krystilize.colorise.queue.JoinInviteSystem;
 import org.krystilize.colorise.queue.QueueSystem;
 
@@ -93,6 +94,7 @@ public class Server {
         MinecraftServer.getCommandManager().register(new GameModeCommand());
         MinecraftServer.getCommandManager().register(new ObserveCommand(queueSystem));
         MinecraftServer.getCommandManager().register(new JoinCommand());
+        MinecraftServer.getCommandManager().register(new ShoutCommand());
 
         // Start the server on port 25565
         minecraftServer.start("0.0.0.0", 25565);
