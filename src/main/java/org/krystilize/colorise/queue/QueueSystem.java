@@ -75,8 +75,9 @@ public record QueueSystem(Instance lobby) {
             return players;
         });
 
-        // Reset their pos
+        // Reset their pos and clear inventory
         player.teleport(player.getRespawnPoint());
+        player.getInventory().clear();
     }
 
     public void removePlayer(Player player) {
