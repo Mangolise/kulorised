@@ -1,10 +1,13 @@
 package org.krystilize.colorise;
 
+import dev.emortal.nbstom.NBS;
+import dev.emortal.nbstom.NBSSong;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
+import net.minestom.server.MinecraftServer;
 import net.minestom.server.advancements.FrameType;
 import net.minestom.server.advancements.notifications.Notification;
 import net.minestom.server.advancements.notifications.NotificationCenter;
@@ -20,6 +23,7 @@ import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.scoreboard.Team;
 import net.minestom.server.sound.SoundEvent;
+import net.minestom.server.timer.TaskSchedule;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
@@ -84,7 +88,7 @@ public class Util {
 
     public static void log(Object log) {
         String logString = log.toString();
-        Audiences.all().sendMessage(Component.text(logString));
+        Util.broadcast(Component.text(logString));
     }
 
     public static boolean lacksPermission(CommandSender sender) {
@@ -158,5 +162,28 @@ public class Util {
         long millis = (time % 1000) / 10;
 
         return String.format("%02d:%02d.%02d", minutes, seconds, millis);
+    }
+
+    public static Component formatMessage(String server, CommandSender sender, String message) {
+        return formatMessage(server, sender, Component.text(message));
+    }
+
+    public static Component formatMessage(String server, CommandSender sender, Component message) {
+        String username = sender instanceof Player player ? player.getUsername() : "Console";
+        return Component.text()
+                .append(Component.text("[").color(NamedTextColor.GRAY))
+                .append(Component.text(server).color(NamedTextColor.DARK_GRAY))
+                .append(Component.text("] ").color(NamedTextColor.GRAY))
+                .append(Component.text(username + ": ").color(NamedTextColor.WHITE))
+                .append(message)
+                .build();
+    }
+
+    public static void loopSong(NBSSong song, Player player) {
+        NBS.play(song, player).thenRun(() -> {
+            if (player.isOnline()) {
+                MinecraftServer.getSchedulerManager().scheduleEndOfTick(() -> loopSong(song, player));
+            }
+        });
     }
 }

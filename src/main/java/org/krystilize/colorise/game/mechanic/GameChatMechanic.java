@@ -1,7 +1,9 @@
 package org.krystilize.colorise.game.mechanic;
 
+import net.kyori.adventure.text.Component;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.player.PlayerChatEvent;
+import org.krystilize.colorise.Util;
 import org.krystilize.colorise.game.ColoriseGame;
 
 public class GameChatMechanic implements Mechanic {
@@ -13,9 +15,9 @@ public class GameChatMechanic implements Mechanic {
 
             ColoriseGame game = context.game();
 
-            String msg = "[GAME] " + e.getPlayer().getUsername() + ": " + e.getMessage();
+            Component message = Util.formatMessage("GAME", e.getPlayer(), e.getMessage());
             for (Player p : game.players()) {
-                p.sendMessage(msg);
+                p.sendMessage(message);
             }
         });
     }

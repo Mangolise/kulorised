@@ -17,6 +17,7 @@ import net.minestom.server.sound.SoundEvent;
 import net.minestom.server.tag.Tag;
 import org.krystilize.colorise.BlockAnalysis;
 import org.krystilize.colorise.Server;
+import org.krystilize.colorise.Util;
 import org.krystilize.colorise.event.PlayerJoinAcceptEvent;
 import org.krystilize.colorise.game.GameInfo;
 import org.krystilize.colorise.game.GameInstance;
@@ -233,9 +234,9 @@ public record QueueSystem(Instance lobby) {
 
         e.setCancelled(true);
 
-        String msg = "[LOBBY] " + e.getPlayer().getUsername() + ": " + e.getMessage();
+        Component message = Util.formatMessage("LOBBY", e.getPlayer(), e.getMessage());
         for (Player p : lobby.getPlayers()) {
-            p.sendMessage(msg);
+            p.sendMessage(message);
         }
     }
 }
