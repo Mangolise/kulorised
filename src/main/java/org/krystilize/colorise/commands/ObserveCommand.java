@@ -4,16 +4,19 @@ import net.minestom.server.command.CommandSender;
 import net.minestom.server.command.builder.Command;
 import net.minestom.server.command.builder.CommandContext;
 import net.minestom.server.entity.Player;
+import net.minestom.server.instance.Instance;
 import org.krystilize.colorise.Util;
 import org.krystilize.colorise.game.GameInstance;
 import org.krystilize.colorise.queue.QueueSystem;
 
 public class ObserveCommand extends Command {
     private final QueueSystem queue;
+    private final Instance lobby;
 
-    public ObserveCommand(QueueSystem queue) {
+    public ObserveCommand(QueueSystem queue, Instance lobby) {
         super("observe");
         this.queue = queue;
+        this.lobby = lobby;
 
         setCondition((sender, s) -> sender instanceof Player player && Util.ADMINS.contains(player.getUsername()));
 
@@ -39,6 +42,7 @@ public class ObserveCommand extends Command {
         if (queue.isQueued(player)) queue.removePlayer(player);
         if (player.getInstance() instanceof GameInstance game) game.stop();
 
+        if (player.getInstance() != lobby) player.setInstance(lobby);
         player.sendMessage("You are exempt from queuing");
     }
 }

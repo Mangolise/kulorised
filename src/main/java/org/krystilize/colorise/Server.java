@@ -1,6 +1,7 @@
 package org.krystilize.colorise;
 
 import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.minestom.server.MinecraftServer;
@@ -13,6 +14,7 @@ import net.minestom.server.event.entity.EntityAttackEvent;
 import net.minestom.server.event.item.ItemDropEvent;
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
 import net.minestom.server.event.player.PlayerDisconnectEvent;
+import net.minestom.server.event.player.PlayerMoveEvent;
 import net.minestom.server.event.player.PlayerSpawnEvent;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.InstanceManager;
@@ -74,7 +76,19 @@ public class Server {
             player.setGlowing(true);
 
             Util.sendNotification(player, "Welcome to our game :)", NamedTextColor.YELLOW, FrameType.TASK, Material.GOLDEN_HELMET);
+
+            Util.broadcast(Component
+                    .text("[").color(TextColor.fromHexString("#a1a1a1"))
+                    .append(Component.text("+").color(TextColor.fromHexString("#2bd91e")))
+                    .append(Component.text("] ").color(TextColor.fromHexString("#a1a1a1"))
+                    .append(Component.text(player.getUsername() + " joined the game").color(TextColor.fromHexString("#2bd91e")))));
         });
+
+        globalEventHandler.addListener(PlayerDisconnectEvent.class, event -> Util.broadcast(Component
+                .text("[").color(TextColor.fromHexString("#a1a1a1"))
+                .append(Component.text("-").color(TextColor.fromHexString("#e02a1d")))
+                .append(Component.text("] ").color(TextColor.fromHexString("#a1a1a1"))
+                .append(Component.text(event.getPlayer().getUsername() + " left the game").color(TextColor.fromHexString("#e02a1d"))))));
 
         {
             TeamManager tm = MinecraftServer.getTeamManager();
@@ -100,6 +114,12 @@ public class Server {
             }
         });
 
+        lobbyInstance.eventNode().addListener(PlayerMoveEvent.class, event -> {
+            if (event.getPlayer().getPosition().y() < 0) {
+                event.getPlayer().teleport(SPAWN);
+            }
+        });
+
         JoinInviteSystem.start();
 
         boolean enableSkins = Objects.equals(System.getenv("ENABLE_SKINS"), "true");
@@ -111,7 +131,7 @@ public class Server {
         }
 
         MinecraftServer.getCommandManager().register(new GameModeCommand());
-        MinecraftServer.getCommandManager().register(new ObserveCommand(queueSystem));
+        MinecraftServer.getCommandManager().register(new ObserveCommand(queueSystem, lobbyInstance));
         MinecraftServer.getCommandManager().register(new JoinCommand());
         MinecraftServer.getCommandManager().register(new ShoutCommand());
         MinecraftServer.getCommandManager().register(new LeaderboardCommand());

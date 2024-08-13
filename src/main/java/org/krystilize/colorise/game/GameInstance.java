@@ -1,12 +1,13 @@
 package org.krystilize.colorise.game;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.event.trait.InstanceEvent;
 import net.minestom.server.instance.SharedInstance;
 import net.minestom.server.tag.Tag;
-import org.krystilize.colorise.Server;
 import org.krystilize.colorise.Util;
 import org.krystilize.colorise.game.mechanic.Mechanic;
 import org.krystilize.colorise.queue.QueueSystem;
@@ -51,7 +52,6 @@ public abstract class GameInstance extends SharedInstance {
     }
 
     public void stop() {
-
         if (!started) {
             throw new IllegalStateException("Cannot stop a game that has not started");
         }
@@ -73,6 +73,13 @@ public abstract class GameInstance extends SharedInstance {
         if (player2.isOnline()) {
             game.queue().addPlayer(player2);
         }
+
+        broadcast(Component.text("Game has ended").color(TextColor.fromHexString("#eb4015")));
+    }
+
+    public void broadcast(Component msg) {
+        player1.sendMessage(msg);
+        player2.sendMessage(msg);
     }
 
     public Player getPlayer1() {
