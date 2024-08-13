@@ -1,5 +1,6 @@
 package org.krystilize.colorise.game;
 
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.minestom.server.coordinate.Point;
@@ -7,6 +8,7 @@ import net.minestom.server.entity.Player;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.event.trait.InstanceEvent;
 import net.minestom.server.instance.SharedInstance;
+import net.minestom.server.sound.SoundEvent;
 import net.minestom.server.tag.Tag;
 import org.krystilize.colorise.Util;
 import org.krystilize.colorise.game.mechanic.Mechanic;
@@ -50,6 +52,11 @@ public abstract class GameInstance extends SharedInstance {
             mechanic.setup(context);
             loadedMechanics.put(mechanic.getClass(), mechanic);
         }
+
+        // Sound
+        Sound sound = Sound.sound(SoundEvent.ENTITY_WITHER_SPAWN, Sound.Source.BLOCK, 0.7f, 1);
+        player1.playSound(sound);
+        player2.playSound(sound);
     }
 
     public void stop() {
