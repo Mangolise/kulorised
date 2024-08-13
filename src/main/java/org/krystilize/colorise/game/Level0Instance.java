@@ -41,6 +41,7 @@ public class Level0Instance extends GameInstance {
                 new WindowsMechanic(),
                 new DoorControlMechanic(),
                 new CheckpointMechanic(),
+                new WinMechanic(),
                 new GameChatMechanic()
         );
     }

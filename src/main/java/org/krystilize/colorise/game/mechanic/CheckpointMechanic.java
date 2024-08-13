@@ -1,42 +1,49 @@
 package org.krystilize.colorise.game.mechanic;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.title.TitlePart;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.player.PlayerMoveEvent;
-import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.Block;
+import net.minestom.server.network.packet.server.SendablePacket;
+import net.minestom.server.network.packet.server.play.BlockChangePacket;
+import net.minestom.server.timer.TaskSchedule;
 import org.jetbrains.annotations.UnknownNullability;
 import org.krystilize.colorise.Util;
+import org.krystilize.colorise.game.GameInstance;
 
 public class CheckpointMechanic implements Mechanic {
     private @UnknownNullability Map<Point, Point> checkpoints;
 
     public void setup(Context context) {
-        Instance instance = context.instance();
+        GameInstance instance = context.instance();
 
+        instance.scheduler().scheduleTask(() -> {
+            doSetup(instance, context);
+            return TaskSchedule.stop();
+        }, TaskSchedule.tick(10));
+    }
+
+    private void doSetup(GameInstance instance, Context context) {
         checkpoints = new ConcurrentHashMap<>();
 
-        Map<Point, Boolean> pressurePlates = context.mechanic(BlockAnalysisMechanic.class).PRESSURE_PLATES.get();
+        Map<Point, Boolean> pressurePlates = context.mechanic(BlockAnalysisMechanic.class).CHECKPOINT_PLATES.get();
 
         List<Point> spawnPlates = new ArrayList<>();
+        Set<SendablePacket> packets = new HashSet<>();
 
         // get spawn points
         for (Entry<Point, Boolean> plate : pressurePlates.entrySet()) {
             if (plate.getValue()) {
                 spawnPlates.add(plate.getKey());
                 checkpoints.put(plate.getKey(), plate.getKey().add(0.5, 0.0, 0.5));
-                instance.setBlock(plate.getKey(), Block.AIR);
+
+                packets.add(new BlockChangePacket(plate.getKey(), Block.AIR));
             }
         }
 
@@ -59,8 +66,11 @@ public class CheckpointMechanic implements Mechanic {
             }
 
             checkpoints.put(plate.getKey(), closestSpawn.add(0.5, 0.0, 0.5));
-            instance.setBlock(plate.getKey(), Block.AIR);
+            packets.add(new BlockChangePacket(plate.getKey(), Block.AIR));
         }
+
+        instance.getPlayer1().sendPackets(packets);
+        instance.getPlayer2().sendPackets(packets);
 
         context.events().addListener(PlayerMoveEvent.class, (event) -> {
             Player player = event.getPlayer();

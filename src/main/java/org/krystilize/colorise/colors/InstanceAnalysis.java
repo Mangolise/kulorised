@@ -45,11 +45,20 @@ public class InstanceAnalysis {
         return Map.copyOf(colors);
     }
 
-    public static Map<Point, Boolean> scanForPressurePlates(Instance instance, Path pathToRegions) {
-        Map<Point, Block> blocks = scanForBlocks(instance, pathToRegions, Util::isPressurePlate);
+    public static Map<Point, Boolean> scanForCheckpointPlates(Instance instance, Path pathToRegions) {
+        Map<Point, Block> blocks = scanForBlocks(instance, pathToRegions, Util::isCheckpointPlate);
 
         Map<Point, Boolean> plates = new HashMap<>();
         blocks.forEach((point, block) -> plates.put(point, block.equals(Block.LIGHT_WEIGHTED_PRESSURE_PLATE)));
+
+        return Map.copyOf(plates);
+    }
+
+    public static Map<Point, Boolean> scanForWinPlates(Instance instance, Path pathToRegions) {
+        Map<Point, Block> blocks = scanForBlocks(instance, pathToRegions, Util::isWinPlate);
+
+        Map<Point, Boolean> plates = new HashMap<>();
+        blocks.forEach((point, block) -> plates.put(point, false));
 
         return Map.copyOf(plates);
     }

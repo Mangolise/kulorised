@@ -58,8 +58,12 @@ public class Util {
                 !block.name().contains("black");
     }
 
-    public static boolean isPressurePlate(Block block) {
+    public static boolean isCheckpointPlate(Block block) {
         return block.equals(Block.LIGHT_WEIGHTED_PRESSURE_PLATE) || block.equals(Block.HEAVY_WEIGHTED_PRESSURE_PLATE);
+    }
+
+    public static boolean isWinPlate(Block block) {
+        return block.equals(Block.OAK_PRESSURE_PLATE);
     }
 
     public static boolean isStainedGlass(Block block) {
