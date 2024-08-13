@@ -113,6 +113,9 @@ public record QueueSystem(Instance lobby) {
 
                 if (p1 != null && p2 != null) {
                     // match exists, start a game
+                    queudPlayers.remove(p1);
+                    queudPlayers.remove(p2);
+
                     startGame(p1, p2);
 
                     iterator.remove();
