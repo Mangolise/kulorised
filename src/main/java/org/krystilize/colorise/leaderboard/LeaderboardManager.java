@@ -55,6 +55,16 @@ public class LeaderboardManager {
         updateScoreboard();
     }
 
+    public static boolean toggleScoreboard(Player player) {
+        if (leaderboard.getViewers().contains(player)) {
+            leaderboard.removeViewer(player);
+            return false;
+        } else {
+            leaderboard.addViewer(player);
+            return true;
+        }
+    }
+
     private static void updateScoreboard() {
         // Add all the players scores
         for (Sidebar.ScoreboardLine line : leaderboard.getLines()) {
@@ -63,8 +73,10 @@ public class LeaderboardManager {
 
         List<GameCompletion> top = getTopCompletions(5);
 
+        Sidebar.ScoreboardLine disableInfo = new Sidebar.ScoreboardLine("disable", Component.text("Toggle with /togglescoreboard"), -1);
         if (top.isEmpty()) {
             leaderboard.createLine(new Sidebar.ScoreboardLine("0", Component.text("No completions").color(NamedTextColor.GRAY), 0));
+            leaderboard.createLine(disableInfo);
             return;
         }
 
@@ -72,10 +84,12 @@ public class LeaderboardManager {
             GameCompletion completion = top.get(i);
 
             Sidebar.ScoreboardLine line = new Sidebar.ScoreboardLine("" + i, Component
-                    .text(completion.timeString() + " - " + completion.playersString())
+                    .text((i+1) + ". " + completion.timeString() + " - " + completion.playersString())
                     .color(TextColor.fromHexString(getColourForPlace(i))), top.size()-i);
 
             leaderboard.createLine(line);
         }
+
+        leaderboard.createLine(disableInfo);
     }
 }

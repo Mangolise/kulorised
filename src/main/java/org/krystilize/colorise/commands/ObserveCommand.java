@@ -5,7 +5,6 @@ import net.minestom.server.command.builder.Command;
 import net.minestom.server.command.builder.CommandContext;
 import net.minestom.server.entity.Player;
 import net.minestom.server.instance.Instance;
-import org.krystilize.colorise.Util;
 import org.krystilize.colorise.game.GameInstance;
 import org.krystilize.colorise.queue.QueueSystem;
 
@@ -18,8 +17,7 @@ public class ObserveCommand extends Command {
         this.queue = queue;
         this.lobby = lobby;
 
-        setCondition((sender, s) -> sender instanceof Player player && Util.ADMINS.contains(player.getUsername()));
-
+        setCondition((sender, s) -> sender instanceof Player);
         addSyntax(this::executeNoArgs);
     }
 
