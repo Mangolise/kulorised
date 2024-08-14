@@ -24,6 +24,7 @@ public class BlockAnalysis {
     public static Analysis<Boolean> CHECKPOINT_PLATES = new Analysis<>();
     public static Analysis<Block> TERRACOTTA = new Analysis<>();
     public static Analysis<Boolean> WIN_PLATES = new Analysis<>();
+    public static Analysis<Block> BUTTONS = new Analysis<>();
 
     public static void analyse(Instance instance) {
         COLORED_BLOCKS.blocks = InstanceAnalysis.scanForColoredBlocks(instance, pathToRegions);
@@ -31,7 +32,10 @@ public class BlockAnalysis {
         CHECKPOINT_PLATES.blocks = InstanceAnalysis.scanForCheckpointPlates(instance, pathToRegions);
         TERRACOTTA.blocks = InstanceAnalysis.scanForTerracottaBlocks(instance, pathToRegions);
         WIN_PLATES.blocks = InstanceAnalysis.scanForWinPlates(instance, pathToRegions);
+        BUTTONS.blocks = InstanceAnalysis.scanForBlocks(instance, pathToRegions, (b) -> b.compare(Block.STONE_BUTTON));
 
+        // Switch buttons to levers
+        BUTTONS.get().forEach((point, block) -> instance.setBlock(point, Block.LEVER.withProperty("facing", block.getProperty("facing")).withProperty("face", block.getProperty("face"))));
         // checkpoint plates, and win plates need to be removed
         CHECKPOINT_PLATES.get().forEach((point, ignored) -> instance.setBlock(point, Block.AIR));
         WIN_PLATES.get().forEach((point, ignored) -> instance.setBlock(point, Block.AIR));
