@@ -3,8 +3,8 @@ package org.krystilize.colorise.leaderboard;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class GameTimeStorage {
     private final List<GameCompletion> data = new ArrayList<>();
@@ -39,7 +39,7 @@ public class GameTimeStorage {
 
         // Append the line
         try {
-            Files.write(dbFile.toPath(), ("\n" + String.join(",", game.players()) + " " + game.time()).getBytes());
+            Files.write(dbFile.toPath(), ("\n" + String.join(",", game.players()) + " " + game.time()).getBytes(), StandardOpenOption.APPEND);
         } catch (IOException e) {
             System.out.println("Failed to write to data file");
         }
