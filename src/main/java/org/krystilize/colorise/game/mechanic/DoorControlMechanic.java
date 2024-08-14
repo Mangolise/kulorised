@@ -73,12 +73,12 @@ public class DoorControlMechanic implements Mechanic {
             }
             if (toggled.contains(event.getBlockPosition())) { // Lever itself
                 toggled.remove(event.getBlockPosition());
-                Block newBlock = Block.LEVER.withProperty("powered", "false");
+                Block newBlock = event.getBlock().withProperty("powered", "false");
                 BlockChangePacket packet = new BlockChangePacket(event.getBlockPosition(), newBlock);
                 PacketUtils.sendGroupedPacket(game.getPlayers(), packet);
             } else {
                 toggled.add(event.getBlockPosition());
-                Block newBlock = Block.LEVER.withProperty("powered", "true");
+                Block newBlock = event.getBlock().withProperty("powered", "true");
                 BlockChangePacket packet = new BlockChangePacket(event.getBlockPosition(), newBlock);
                 PacketUtils.sendGroupedPacket(game.getPlayers(), packet);
             }
