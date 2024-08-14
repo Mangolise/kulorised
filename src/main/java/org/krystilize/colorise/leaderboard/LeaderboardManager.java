@@ -19,7 +19,11 @@ public class LeaderboardManager {
     private static GameTimeStorage gameTimeStorage = null;
 
     public static List<GameCompletion> getTopCompletions(int amount) {
-        return gameTimeStorage.completions().subList(0, Math.min(amount, gameTimeStorage.completions().size())).stream().sorted(Comparator.comparingLong(GameCompletion::time)).toList();
+        return gameTimeStorage.completions()
+                .stream()
+                .sorted(Comparator.comparingLong(GameCompletion::time))
+                .limit(amount)
+                .toList();
     }
 
     public static String getColourForPlace(int place) {

@@ -3,9 +3,7 @@ package org.krystilize.colorise.leaderboard;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class GameTimeStorage {
@@ -28,7 +26,7 @@ public class GameTimeStorage {
 
                 String[] playerNames = parts[0].split(",");
                 long time = Long.parseLong(parts[1]);
-                data.add(new GameCompletion(Arrays.stream(playerNames).collect(Collectors.toSet()), time));
+                data.add(new GameCompletion(Set.of(playerNames), time));
             }
         } catch (IOException e) {
             // uhhh idk
@@ -48,6 +46,6 @@ public class GameTimeStorage {
     }
 
     public List<GameCompletion> completions() {
-        return data;
+        return Collections.unmodifiableList(data);
     }
 }
