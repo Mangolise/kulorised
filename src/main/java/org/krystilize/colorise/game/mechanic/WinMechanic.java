@@ -2,10 +2,11 @@ package org.krystilize.colorise.game.mechanic;
 
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.title.Title;
-import net.minestom.server.MinecraftServer;
 import net.minestom.server.advancements.FrameType;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.entity.Player;
@@ -53,10 +54,10 @@ public class WinMechanic implements Mechanic {
                         if (wonPlayers.size() == 2) {
                             doWin(instance);
 
-                            MinecraftServer.getSchedulerManager().scheduleTask(() -> {
-                                instance.stop();
-                                return TaskSchedule.stop();
-                            }, TaskSchedule.seconds(10));
+//                            MinecraftServer.getSchedulerManager().scheduleTask(() -> {
+//                                instance.stop();
+//                                return TaskSchedule.stop();
+//                            }, TaskSchedule.seconds(10));
                         }
                     }
                 }
@@ -82,5 +83,12 @@ public class WinMechanic implements Mechanic {
             Util.broadcast(Component.text("New record!").color(TextColor.fromHexString("#ffea00")));
             Util.sendNotification(game.getPlayers(), "New record!", NamedTextColor.GOLD, FrameType.CHALLENGE, Material.GOLD_BLOCK);
         }
+
+        game.broadcast(Component.text()
+                .append(Component.text("The game is over. "))
+                .append(Component.text("Click here to go back to the lobby.")
+                        .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/leave"))
+                        .hoverEvent(HoverEvent.showText(Component.text("Go back to lobby")))
+                        .color(TextColor.fromHexString("#d69f09"))).asComponent());
     }
 }
