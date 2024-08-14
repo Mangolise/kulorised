@@ -9,18 +9,17 @@ import net.minestom.server.event.player.PlayerDisconnectEvent;
 import net.minestom.server.event.player.PlayerSpawnEvent;
 import net.minestom.server.scoreboard.Sidebar;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class LeaderboardManager {
-    private static final List<GameCompletion> completions = new ArrayList<>();
     private static final Sidebar leaderboard = new Sidebar(Component.text("Leaderboard").color(NamedTextColor.GOLD));
+    private static GameTimeStorage gameTimeStorage = null;
 
     public static List<GameCompletion> getTopCompletions(int amount) {
-        return completions.subList(0, Math.min(amount, completions.size())).stream().sorted(Comparator.comparingLong(GameCompletion::time)).toList();
+        return gameTimeStorage.completions().subList(0, Math.min(amount, gameTimeStorage.completions().size())).stream().sorted(Comparator.comparingLong(GameCompletion::time)).toList();
     }
 
     public static String getColourForPlace(int place) {
@@ -33,7 +32,7 @@ public class LeaderboardManager {
     }
 
     public static void addCompletion(Set<String> players, long time) {
-        completions.add(new GameCompletion(players, time));
+        gameTimeStorage.addCompletion(new GameCompletion(players, time));
     }
 
     public static boolean addCompletionPlayers(Set<Player> players, long time) {
@@ -47,6 +46,8 @@ public class LeaderboardManager {
     }
 
     public static void setup() {
+        gameTimeStorage = new GameTimeStorage();
+
         MinecraftServer.getGlobalEventHandler().addListener(PlayerSpawnEvent.class, e ->
                 leaderboard.addViewer(e.getPlayer()));
         MinecraftServer.getGlobalEventHandler().addListener(PlayerDisconnectEvent.class, e ->
