@@ -160,6 +160,13 @@ public class Server {
             }
         });
 
+        globalEventHandler.addListener(PlayerMoveEvent.class, event -> {
+            if (event.getNewPosition().y() > 100_000) {
+                event.setCancelled(true);
+                event.getPlayer().teleport(SPAWN);
+            }
+        });
+
         globalEventHandler.addListener(ServerListPingEvent.class, event -> {
             ResponseData data = event.getResponseData();
 
