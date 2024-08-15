@@ -26,6 +26,7 @@ import net.minestom.server.event.player.PlayerDisconnectEvent;
 import net.minestom.server.event.player.PlayerMoveEvent;
 import net.minestom.server.event.player.PlayerSpawnEvent;
 import net.minestom.server.event.server.ServerListPingEvent;
+import net.minestom.server.extras.bungee.BungeeCordProxy;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.InstanceManager;
 import net.minestom.server.instance.LightingChunk;
@@ -194,6 +195,14 @@ public class Server {
             System.out.println("Skins enabled.");
         } else {
             System.out.println("Skins disabled.");
+        }
+
+        boolean enableBungee = Objects.equals(System.getenv("DISABLE_BUNGEE"), "true");
+        if (enableBungee) {
+            System.out.println("Bungee disabled.");
+        } else {
+            System.out.println("Bungee enabled.");
+            BungeeCordProxy.enable();
         }
 
         LeaderboardManager.setup();
