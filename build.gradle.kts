@@ -5,7 +5,7 @@ plugins {
     id("io.github.goooler.shadow") version("8.1.7")
 }
 
-group = "org.krystilize"
+group = "net.kulorised"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -22,7 +22,7 @@ dependencies {
 tasks.withType<Jar> {
     manifest {
         // Change this to your main class
-        attributes["Main-Class"] = "org.krystilize.colorise.Server"
+        attributes["Main-Class"] = "net.mangolise.kulorised.Server"
     }
 }
 
