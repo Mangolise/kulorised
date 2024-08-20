@@ -12,7 +12,6 @@ import net.kyori.adventure.text.serializer.gson.impl.JSONComponentSerializerProv
 import net.kyori.adventure.util.HSVLike;
 import net.mangolise.kulorised.commands.*;
 import net.minestom.server.MinecraftServer;
-import net.minestom.server.advancements.FrameType;
 import net.minestom.server.adventure.provider.MinestomComponentLoggerProvider;
 import net.minestom.server.adventure.provider.MinestomGsonComponentSerializerProvider;
 import net.minestom.server.adventure.provider.MinestomLegacyComponentSerializerProvider;
@@ -47,7 +46,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
@@ -116,8 +114,6 @@ public class Server {
 
             // Play music
             Util.loopSong(song, player);
-
-            Util.sendNotification(player, "Welcome to our game :)", NamedTextColor.YELLOW, FrameType.TASK, Material.GOLDEN_HELMET);
 
             Util.broadcast(Component
                     .text("[").color(TextColor.fromHexString("#a1a1a1"))
@@ -192,19 +188,7 @@ public class Server {
 
         JoinInviteSystem.start();
 
-        boolean enableSkins = Objects.equals(System.getenv("ENABLE_SKINS"), "true");
-        if (enableSkins) {
-            new SkinHandler(globalEventHandler);  // Start skin handler
-            System.out.println("Skins enabled.");
-        } else {
-            System.out.println("Skins disabled.");
-        }
-
-        boolean enableBungee = Objects.equals(System.getenv("DISABLE_BUNGEE"), "true");
-        if (enableBungee) {
-            System.out.println("Bungee disabled.");
-        } else {
-            System.out.println("Bungee enabled.");
+        if (net.mangolise.gamesdk.util.Util.useBungeeCord()) {
             BungeeCordProxy.enable();
         }
 
@@ -218,7 +202,7 @@ public class Server {
         MinecraftServer.getCommandManager().register(new ToggleScoreboardCommand());
         MinecraftServer.getCommandManager().register(new LeaveCommand());
 
-        // Start the server on port 25565
-        minecraftServer.start("0.0.0.0", 25565);
+        // Start the server on configured port
+        minecraftServer.start("0.0.0.0", net.mangolise.gamesdk.util.Util.getConfiguredPort());
     }
 }
