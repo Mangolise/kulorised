@@ -24,7 +24,7 @@ dependencies {
 tasks.withType<Jar> {
     manifest {
         // Change this to your main class
-        attributes["Main-Class"] = "net.mangolise.kulorised.Server"
+        attributes["Main-Class"] = "net.mangolise.kulorised.Test"
     }
 }
 

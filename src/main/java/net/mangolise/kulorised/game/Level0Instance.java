@@ -3,7 +3,6 @@ package net.mangolise.kulorised.game;
 import net.mangolise.kulorised.game.mechanic.*;
 import net.minestom.server.item.ItemStack;
 import net.mangolise.kulorised.Color;
-import net.mangolise.kulorised.queue.QueueSystem;
 
 import java.util.List;
 
@@ -12,8 +11,8 @@ public class Level0Instance extends GameInstance {
     private static final List<Color> PLAYER1_COLORS = List.of(Color.BLUE, Color.RED);
     private static final List<Color> PLAYER2_COLORS = List.of(Color.GREEN, Color.YELLOW);
 
-    public Level0Instance(QueueSystem queue, GameInfo info) {
-        super(queue, info);
+    public Level0Instance(GameInfo info) {
+        super(info);
 
         for (int i = 0; i < PLAYER1_COLORS.size(); i++) {
             Color color = PLAYER1_COLORS.get(i);

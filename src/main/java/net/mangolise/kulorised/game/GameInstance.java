@@ -12,7 +12,6 @@ import net.minestom.server.sound.SoundEvent;
 import net.minestom.server.tag.Tag;
 import net.mangolise.kulorised.Util;
 import net.mangolise.kulorised.game.mechanic.Mechanic;
-import net.mangolise.kulorised.queue.QueueSystem;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,9 +25,9 @@ public abstract class GameInstance extends SharedInstance {
     protected final Player player1;
     protected final Player player2;
 
-    public GameInstance(QueueSystem queue, GameInfo info) {
+    public GameInstance(GameInfo info) {
         super(UUID.randomUUID(), info.parent());
-        this.game = new ColoriseGame(info.players(), queue);
+        this.game = new ColoriseGame(info.players());
         this.player1 = info.players().get(0);
         player1.setTag(Team.TAG, Team.BLUE);
         this.player2 = info.players().get(1);
@@ -65,9 +64,7 @@ public abstract class GameInstance extends SharedInstance {
 
         broadcast(Component.text("Game has ended").color(TextColor.fromHexString("#eb4015")));
 
-        // send all players back to the queue, or not
-        game.queue().resetPlayer(player1);
-        game.queue().resetPlayer(player2);
+        // TODO: End game, send players to lobby
     }
 
     public void broadcast(Component msg) {
