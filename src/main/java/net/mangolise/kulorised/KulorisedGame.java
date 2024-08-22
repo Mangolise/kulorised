@@ -178,7 +178,7 @@ public class KulorisedGame extends BaseGame<KulorisedConfig> {
         // Make the game instance
         PolarLoader loader = net.mangolise.gamesdk.util.Util.getPolarLoaderFromResource("worlds/level0.polar");
         InstanceContainer level0Instance = MinecraftServer.getInstanceManager().createInstanceContainer(loader);
-        BlockAnalysis.analyse(level0Instance);
+        BlockAnalysis.analyse(level0Instance, loader.world());
 
         GameInfo info = new GameInfo(List.of(p1, p2), level0Instance);
         MinecraftServer.getInstanceManager().registerInstance(level0Instance);

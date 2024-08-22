@@ -1,5 +1,6 @@
 package net.mangolise.kulorised;
 
+import net.hollowcube.polar.PolarWorld;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.Block;
@@ -26,13 +27,13 @@ public class BlockAnalysis {
     public static Analysis<Boolean> WIN_PLATES = new Analysis<>();
     public static Analysis<Block> BUTTONS = new Analysis<>();
 
-    public static void analyse(Instance instance) {
-        COLORED_BLOCKS.blocks = InstanceAnalysis.scanForColoredBlocks(instance, pathToRegions);
-        WINDOW_PANES.blocks = InstanceAnalysis.scanForWindowPanes(instance, pathToRegions);
-        CHECKPOINT_PLATES.blocks = InstanceAnalysis.scanForCheckpointPlates(instance, pathToRegions);
-        TERRACOTTA.blocks = InstanceAnalysis.scanForTerracottaBlocks(instance, pathToRegions);
-        WIN_PLATES.blocks = InstanceAnalysis.scanForWinPlates(instance, pathToRegions);
-        BUTTONS.blocks = InstanceAnalysis.scanForBlocks(instance, pathToRegions, (b) -> b.compare(Block.STONE_BUTTON));
+    public static void analyse(Instance instance, PolarWorld world) {
+        COLORED_BLOCKS.blocks = InstanceAnalysis.scanForColoredBlocks(instance, world);
+        WINDOW_PANES.blocks = InstanceAnalysis.scanForWindowPanes(instance, world);
+        CHECKPOINT_PLATES.blocks = InstanceAnalysis.scanForCheckpointPlates(instance, world);
+        TERRACOTTA.blocks = InstanceAnalysis.scanForTerracottaBlocks(instance, world);
+        WIN_PLATES.blocks = InstanceAnalysis.scanForWinPlates(instance, world);
+        BUTTONS.blocks = InstanceAnalysis.scanForBlocks(instance, world, (b) -> b.compare(Block.STONE_BUTTON));
 
         // Switch buttons to levers
         BUTTONS.get().forEach((point, block) -> instance.setBlock(point, Block.LEVER.withProperty("facing", block.getProperty("facing")).withProperty("face", block.getProperty("face"))));

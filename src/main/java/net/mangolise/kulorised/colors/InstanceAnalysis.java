@@ -1,5 +1,7 @@
 package net.mangolise.kulorised.colors;
 
+import net.hollowcube.polar.PolarChunk;
+import net.hollowcube.polar.PolarWorld;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.instance.DynamicChunk;
 import net.minestom.server.instance.Instance;
@@ -19,8 +21,8 @@ import java.util.function.Predicate;
 
 public class InstanceAnalysis {
 
-    public static Map<Point, Color> scanForColoredBlocks(Instance instance, Path pathToRegions) {
-        Map<Point, Block> blocks = scanForBlocks(instance, pathToRegions, Util::isColoredBlock);
+    public static Map<Point, Color> scanForColoredBlocks(Instance instance, PolarWorld world) {
+        Map<Point, Block> blocks = scanForBlocks(instance, world, Util::isColoredBlock);
 
         Map<Point, Color> colors = new HashMap<>();
 
@@ -32,8 +34,8 @@ public class InstanceAnalysis {
         return Map.copyOf(colors);
     }
 
-    public static Map<Point, Color> scanForWindowPanes(Instance instance, Path pathToRegions) {
-        Map<Point, Block> blocks = scanForBlocks(instance, pathToRegions, Util::isWindowPane);
+    public static Map<Point, Color> scanForWindowPanes(Instance instance, PolarWorld world) {
+        Map<Point, Block> blocks = scanForBlocks(instance, world, Util::isWindowPane);
 
         Map<Point, Color> colors = new HashMap<>();
 
@@ -45,8 +47,8 @@ public class InstanceAnalysis {
         return Map.copyOf(colors);
     }
 
-    public static Map<Point, Boolean> scanForCheckpointPlates(Instance instance, Path pathToRegions) {
-        Map<Point, Block> blocks = scanForBlocks(instance, pathToRegions, Util::isCheckpointPlate);
+    public static Map<Point, Boolean> scanForCheckpointPlates(Instance instance, PolarWorld world) {
+        Map<Point, Block> blocks = scanForBlocks(instance, world, Util::isCheckpointPlate);
 
         Map<Point, Boolean> plates = new HashMap<>();
         blocks.forEach((point, block) -> plates.put(point, block.equals(Block.LIGHT_WEIGHTED_PRESSURE_PLATE)));
@@ -54,8 +56,8 @@ public class InstanceAnalysis {
         return Map.copyOf(plates);
     }
 
-    public static Map<Point, Boolean> scanForWinPlates(Instance instance, Path pathToRegions) {
-        Map<Point, Block> blocks = scanForBlocks(instance, pathToRegions, Util::isWinPlate);
+    public static Map<Point, Boolean> scanForWinPlates(Instance instance, PolarWorld world) {
+        Map<Point, Block> blocks = scanForBlocks(instance, world, Util::isWinPlate);
 
         Map<Point, Boolean> plates = new HashMap<>();
         blocks.forEach((point, block) -> plates.put(point, false));
@@ -63,8 +65,8 @@ public class InstanceAnalysis {
         return Map.copyOf(plates);
     }
 
-    public static Map<Point, Block> scanForTerracottaBlocks(Instance instance, Path pathToRegions) {
-        return scanForBlocks(instance, pathToRegions, Util::isTerracotta);
+    public static Map<Point, Block> scanForTerracottaBlocks(Instance instance, PolarWorld world) {
+        return scanForBlocks(instance, world, Util::isTerracotta);
     }
 
 
@@ -73,73 +75,52 @@ public class InstanceAnalysis {
      * <p>
      *     Note that this method will not scan for air blocks.
      * @param instance the instance to scan
-     * @param pathToRegions the path to the regions
      * @param blockPredicate the predicate to match
      * @return a map of points to blocks
      */
-    public static Map<Point, Block> scanForBlocks(Instance instance, Path pathToRegions, Predicate<Block> blockPredicate) {
+    public static Map<Point, Block> scanForBlocks(Instance instance, PolarWorld world, Predicate<Block> blockPredicate) {
         Map<Point, Block> blocks = new ConcurrentHashMap<>();
 
-        // for all regions
-        try (var dir = Files.newDirectoryStream(pathToRegions)) {
-            for (Path regionName : dir) {
+        // for all chunks
+        long startTime = System.currentTimeMillis();
+        List<CompletableFuture<?>> futures = new ArrayList<>();
 
-                String coords = regionName.getFileName().toString().replace("r.", "").replace(".mca", "");
-                String[] split = coords.split("\\.");
-                int regionX = Integer.parseInt(split[0]);
-                int regionZ = Integer.parseInt(split[1]);
+        for (PolarChunk polarChunk : world.chunks()) {
+            futures.add(instance.loadChunk(polarChunk.x(), polarChunk.z()).thenAccept(chunk -> {
+                DynamicChunk dynamicChunk = (DynamicChunk) chunk;
 
-                // load all chunks in these regions (512 x 512 blocks)
-                int startX = regionX * 512;
-                int startZ = regionZ * 512;
-                int endX = startX + 512;
-                int endZ = startZ + 512;
+                boolean isChunkEmpty = true;
+                for (Section section : dynamicChunk.getSections()) {
+                    Palette blockPalette = section.blockPalette();
+                    if (blockPalette.count() > 1) {
+                        isChunkEmpty = false;
+                        break;
+                    }
 
-                long startTime = System.currentTimeMillis();
-                List<CompletableFuture<?>> futures = new ArrayList<>();
-
-                for (int x = startX; x < endX; x += 16) {
-                    for (int z = startZ; z < endZ; z += 16) {
-                        futures.add(instance.loadChunk(x / 16, z / 16).thenAccept(chunk -> {
-                            DynamicChunk dynamicChunk = (DynamicChunk) chunk;
-
-                            boolean isChunkEmpty = true;
-                            for (Section section : dynamicChunk.getSections()) {
-                                Palette blockPalette = section.blockPalette();
-                                if (blockPalette.count() > 1) {
-                                    isChunkEmpty = false;
-                                    break;
-                                }
-
-                                if (blockPalette.count() == 1 && blockPalette.get(0, 0, 0) != 0){
-                                    isChunkEmpty = false;
-                                    break;
-                                }
-                            }
-
-                            if (isChunkEmpty) {
-                                return;
-                            }
-
-                            Util.forEachNonAirBlockInChunk(chunk, (point, block) -> {
-                                if (!blockPredicate.test(block)) {
-                                    return;
-                                }
-                                blocks.put(point, block);
-                            });
-                        }));
+                    if (blockPalette.count() == 1 && blockPalette.get(0, 0, 0) != 0){
+                        isChunkEmpty = false;
+                        break;
                     }
                 }
 
-                CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
+                if (isChunkEmpty) {
+                    return;
+                }
 
-                long endTime = System.currentTimeMillis();
-
-                System.out.println("Analysed region " + regionX + " " + regionZ + " in " + (endTime - startTime) + "ms");
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+                Util.forEachNonAirBlockInChunk(chunk, (point, block) -> {
+                    if (!blockPredicate.test(block)) {
+                        return;
+                    }
+                    blocks.put(point, block);
+                });
+            }));
         }
+
+        CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
+
+        long endTime = System.currentTimeMillis();
+
+        System.out.println("Analyed instance in " + (endTime - startTime) + "ms");
 
         return Map.copyOf(blocks);
     }
