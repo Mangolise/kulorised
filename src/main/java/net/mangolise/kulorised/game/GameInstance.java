@@ -3,6 +3,8 @@ package net.mangolise.kulorised.game;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
+import net.mangolise.kulorised.event.GameEndEvent;
+import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.EventNode;
@@ -64,7 +66,7 @@ public abstract class GameInstance extends SharedInstance {
 
         broadcast(Component.text("Game has ended").color(TextColor.fromHexString("#eb4015")));
 
-        // TODO: End game, send players to lobby
+        MinecraftServer.getGlobalEventHandler().call(new GameEndEvent(false));
     }
 
     public void broadcast(Component msg) {

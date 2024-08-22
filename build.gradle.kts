@@ -2,11 +2,14 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     id("java")
+    id("maven-publish")
     id("io.github.goooler.shadow") version("8.1.7")
 }
 
+var versionStr = System.getenv("GIT_COMMIT") ?: "dev"
+
 group = "net.kulorised"
-version = "1.0-SNAPSHOT"
+version = versionStr
 
 repositories {
     mavenCentral()
@@ -25,6 +28,38 @@ java {
     withSourcesJar()
 }
 
+publishing {
+    repositories {
+        maven {
+            name = "serbleMaven"
+            url = uri("https://maven.serble.net/snapshots/")
+            credentials {
+                username = System.getenv("SERBLE_REPO_USERNAME")?:""
+                password = System.getenv("SERBLE_REPO_PASSWORD")?:""
+            }
+            authentication {
+                create<BasicAuthentication>("basic")
+            }
+        }
+    }
+
+    publications {
+        create<MavenPublication>("mavenGitCommit") {
+            groupId = "net.mangolise"
+            artifactId = "kulorised"
+            version = versionStr
+            from(components["java"])
+        }
+
+        create<MavenPublication>("mavenLatest") {
+            groupId = "net.mangolise"
+            artifactId = "kulorised"
+            version = "latest"
+            from(components["java"])
+        }
+    }
+}
+
 tasks.withType<Jar> {
     manifest {
         // Change this to your main class
@@ -36,4 +71,9 @@ tasks.withType<ShadowJar> {
     minimize {
         exclude(dependency("com.github.ben-manes.caffeine:caffeine:.*"))
     }
+}
+
+tasks.register("packageWorlds", net.mangolise.gamesdk.gradle.PackageWorldTask::class.java)
+tasks.processResources {
+    dependsOn("packageWorlds")
 }

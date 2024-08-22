@@ -2,6 +2,7 @@ package net.mangolise.kulorised;
 
 import ch.qos.logback.classic.spi.LogbackServiceProvider;
 import dev.emortal.nbstom.NBSSong;
+import net.hollowcube.polar.PolarLoader;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -16,7 +17,6 @@ import net.mangolise.kulorised.feats.HitSoundFeature;
 import net.mangolise.kulorised.game.GameInfo;
 import net.mangolise.kulorised.game.Level0Instance;
 import net.mangolise.kulorised.leaderboard.LeaderboardManager;
-import net.mangolise.kulorised.queue.JoinInviteSystem;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.adventure.provider.MinestomComponentLoggerProvider;
 import net.minestom.server.adventure.provider.MinestomGsonComponentSerializerProvider;
@@ -28,9 +28,6 @@ import net.minestom.server.event.GlobalEventHandler;
 import net.minestom.server.event.player.PlayerDisconnectEvent;
 import net.minestom.server.event.server.ServerListPingEvent;
 import net.minestom.server.instance.InstanceContainer;
-import net.minestom.server.instance.InstanceManager;
-import net.minestom.server.instance.LightingChunk;
-import net.minestom.server.instance.anvil.AnvilLoader;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.ping.ResponseData;
@@ -70,13 +67,6 @@ public class KulorisedGame extends BaseGame<KulorisedConfig> {
 
         // Register all sign blocks
         MinecraftServer.getBlockManager().registerHandler("minecraft:sign", () -> SignBlock.INSTANCE);
-
-        // Create the instance
-        InstanceManager instanceManager = MinecraftServer.getInstanceManager();
-        InstanceContainer lobbyInstance = instanceManager.createInstanceContainer(new AnvilLoader("worlds/lobby"));
-        lobbyInstance.setChunkSupplier(LightingChunk::new);
-
-        //QueueSystem queueSystem = new QueueSystem(lobbyInstance);
 
         // Add an event callback to specify the spawning instance (and the spawn position)
         GlobalEventHandler globalEventHandler = MinecraftServer.getGlobalEventHandler();
@@ -169,11 +159,9 @@ public class KulorisedGame extends BaseGame<KulorisedConfig> {
             event.setResponseData(data);
         });
 
-        JoinInviteSystem.start();
         LeaderboardManager.setup();
 
         MinecraftServer.getCommandManager().register(new GameModeCommand());
-        MinecraftServer.getCommandManager().register(new ShoutCommand());
         MinecraftServer.getCommandManager().register(new LeaderboardCommand());
         MinecraftServer.getCommandManager().register(new ToggleScoreboardCommand());
 
@@ -188,7 +176,8 @@ public class KulorisedGame extends BaseGame<KulorisedConfig> {
         p2.playSound(startSound);
 
         // Make the game instance
-        InstanceContainer level0Instance = MinecraftServer.getInstanceManager().createInstanceContainer(new AnvilLoader("worlds/level0"));
+        PolarLoader loader = net.mangolise.gamesdk.util.Util.getPolarLoaderFromResource("worlds/level0.polar");
+        InstanceContainer level0Instance = MinecraftServer.getInstanceManager().createInstanceContainer(loader);
         BlockAnalysis.analyse(level0Instance);
 
         GameInfo info = new GameInfo(List.of(p1, p2), level0Instance);

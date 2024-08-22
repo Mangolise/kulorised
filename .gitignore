@@ -20,5 +20,7 @@ gradle-app.setting
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 
-
 .idea
+
+# Ignore built worlds
+src/main/resources/worlds/*
