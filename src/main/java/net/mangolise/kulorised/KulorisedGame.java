@@ -1,7 +1,6 @@
 package net.mangolise.kulorised;
 
 import ch.qos.logback.classic.spi.LogbackServiceProvider;
-import dev.emortal.nbstom.NBSSong;
 import net.hollowcube.polar.PolarLoader;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
@@ -35,8 +34,6 @@ import net.minestom.server.scoreboard.Team;
 import net.minestom.server.scoreboard.TeamManager;
 import net.minestom.server.sound.SoundEvent;
 
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -87,12 +84,12 @@ public class KulorisedGame extends BaseGame<KulorisedConfig> {
 //            }
 //        });
 
-        NBSSong song;
-        try {
-            song = new NBSSong(Path.of("MiiChannelTheme.nbs"));
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }
+//        NBSSong song;
+//        try {
+//            song = new NBSSong(Path.of("MiiChannelTheme.nbs"));
+//        } catch (IOException ex) {
+//            throw new RuntimeException(ex);
+//        }
 
         List<Player> players = MinecraftServer.getConnectionManager().getOnlinePlayers().stream().toList();
         if (players.size() != 2) {
@@ -111,7 +108,7 @@ public class KulorisedGame extends BaseGame<KulorisedConfig> {
             player.setHelmet(ItemStack.of(Material.LEATHER_HELMET));
 
             // Play music
-            Util.loopSong(song, player);
+//            Util.loopSong(song, player);
 
             Util.broadcast(Component
                     .text("[").color(TextColor.fromHexString("#a1a1a1"))
