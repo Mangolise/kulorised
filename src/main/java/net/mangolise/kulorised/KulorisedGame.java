@@ -161,6 +161,7 @@ public class KulorisedGame extends BaseGame<KulorisedConfig> {
         MinecraftServer.getCommandManager().register(new GameModeCommand());
         MinecraftServer.getCommandManager().register(new LeaderboardCommand());
         MinecraftServer.getCommandManager().register(new ToggleScoreboardCommand());
+        MinecraftServer.getCommandManager().register(new LeaveCommand());
 
         // Start the game
         startGame(players.get(0), players.get(1));
