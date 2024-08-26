@@ -10,6 +10,7 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.gson.impl.JSONComponentSerializerProviderImpl;
 import net.kyori.adventure.util.HSVLike;
 import net.mangolise.gamesdk.BaseGame;
+import net.mangolise.gamesdk.util.GameSdkUtils;
 import net.mangolise.kulorised.blocks.SignBlock;
 import net.mangolise.kulorised.commands.*;
 import net.mangolise.kulorised.feats.HitSoundFeature;
@@ -174,7 +175,7 @@ public class KulorisedGame extends BaseGame<KulorisedConfig> {
         p2.playSound(startSound);
 
         // Make the game instance
-        PolarLoader loader = net.mangolise.gamesdk.util.Util.getPolarLoaderFromResource("worlds/level0.polar");
+        PolarLoader loader = GameSdkUtils.getPolarLoaderFromResource("worlds/level0.polar");
         InstanceContainer level0Instance = MinecraftServer.getInstanceManager().createInstanceContainer(loader);
         BlockAnalysis.analyse(level0Instance, loader.world());
 
