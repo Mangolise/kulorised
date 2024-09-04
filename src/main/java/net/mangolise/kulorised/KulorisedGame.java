@@ -10,9 +10,13 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.gson.impl.JSONComponentSerializerProviderImpl;
 import net.kyori.adventure.util.HSVLike;
 import net.mangolise.gamesdk.BaseGame;
+import net.mangolise.gamesdk.util.GameSdkUtils;
 import net.mangolise.kulorised.blocks.SignBlock;
 import net.mangolise.kulorised.commands.*;
 import net.mangolise.kulorised.feats.HitSoundFeature;
+import net.mangolise.kulorised.feats.NoDropFeature;
+import net.mangolise.kulorised.feats.NoServerCrashFeature;
+import net.mangolise.kulorised.feats.VoidRespawnFeature;
 import net.mangolise.kulorised.game.GameInfo;
 import net.mangolise.kulorised.game.Level0Instance;
 import net.mangolise.kulorised.leaderboard.LeaderboardManager;
@@ -47,7 +51,10 @@ public class KulorisedGame extends BaseGame<KulorisedConfig> {
     @Override
     public List<Feature<?>> features() {
         return List.of(
-            new HitSoundFeature()
+            new HitSoundFeature(),
+            new VoidRespawnFeature(),
+            new NoDropFeature(),
+            new NoServerCrashFeature()
         );
     }
 
@@ -174,7 +181,7 @@ public class KulorisedGame extends BaseGame<KulorisedConfig> {
         p2.playSound(startSound);
 
         // Make the game instance
-        PolarLoader loader = net.mangolise.gamesdk.util.Util.getPolarLoaderFromResource("worlds/level0.polar");
+        PolarLoader loader = GameSdkUtils.getPolarLoaderFromResource("worlds/level0.polar");
         InstanceContainer level0Instance = MinecraftServer.getInstanceManager().createInstanceContainer(loader);
         BlockAnalysis.analyse(level0Instance, loader.world());
 

@@ -1,7 +1,7 @@
 package net.mangolise.kulorised;
 
 import net.mangolise.gamesdk.limbo.Limbo;
-import net.mangolise.gamesdk.util.Util;
+import net.mangolise.gamesdk.util.GameSdkUtils;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.extras.bungee.BungeeCordProxy;
 
@@ -17,10 +17,10 @@ public class Test {
                     game.setup();
                 });
 
-        if (Util.useBungeeCord()) {
+        if (GameSdkUtils.useBungeeCord()) {
             BungeeCordProxy.enable();
         }
 
-        server.start("0.0.0.0", Util.getConfiguredPort());
+        server.start("0.0.0.0", GameSdkUtils.getConfiguredPort());
     }
 }
