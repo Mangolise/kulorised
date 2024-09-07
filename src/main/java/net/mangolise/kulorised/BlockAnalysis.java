@@ -1,12 +1,13 @@
 package net.mangolise.kulorised;
 
 import net.hollowcube.polar.PolarWorld;
+import net.mangolise.gamesdk.log.Log;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.Block;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import net.mangolise.kulorised.colors.InstanceAnalysis;
+import net.mangolise.kulorised.colors.WorldAnalysis;
 
 import java.nio.file.Path;
 import java.util.Collections;
@@ -28,12 +29,16 @@ public class BlockAnalysis {
     public static Analysis<Block> BUTTONS = new Analysis<>();
 
     public static void analyse(Instance instance, PolarWorld world) {
-        COLORED_BLOCKS.blocks = InstanceAnalysis.scanForColoredBlocks(instance, world);
-        WINDOW_PANES.blocks = InstanceAnalysis.scanForWindowPanes(instance, world);
-        CHECKPOINT_PLATES.blocks = InstanceAnalysis.scanForCheckpointPlates(instance, world);
-        TERRACOTTA.blocks = InstanceAnalysis.scanForTerracottaBlocks(instance, world);
-        WIN_PLATES.blocks = InstanceAnalysis.scanForWinPlates(instance, world);
-        BUTTONS.blocks = InstanceAnalysis.scanForBlocks(instance, world, (b) -> b.compare(Block.STONE_BUTTON));
+        long start = System.currentTimeMillis();
+        COLORED_BLOCKS.blocks = WorldAnalysis.scanForColoredBlocks(world);
+        WINDOW_PANES.blocks = WorldAnalysis.scanForWindowPanes(world);
+        CHECKPOINT_PLATES.blocks = WorldAnalysis.scanForCheckpointPlates(world);
+        TERRACOTTA.blocks = WorldAnalysis.scanForTerracottaBlocks(world);
+        WIN_PLATES.blocks = WorldAnalysis.scanForWinPlates(world);
+        BUTTONS.blocks = net.mangolise.gamesdk.instance.InstanceAnalysis.scanForBlocks(world, (b) -> b.compare(Block.STONE_BUTTON));
+
+        long end = System.currentTimeMillis();
+        Log.logger().info("Analysis took {}ms", end - start);
 
         // Switch buttons to levers
         BUTTONS.get().forEach((point, block) -> instance.setBlock(point, Block.LEVER.withProperty("facing", block.getProperty("facing")).withProperty("face", block.getProperty("face"))));
