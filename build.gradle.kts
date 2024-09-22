@@ -8,11 +8,12 @@ plugins {
 
 var versionStr = System.getenv("GIT_COMMIT") ?: "dev"
 
-group = "net.kulorised"
+group = "net.mangolise"
 version = versionStr
 
 repositories {
     mavenCentral()
+    mavenLocal()
     maven("https://maven.serble.net/snapshots")
 }
 
