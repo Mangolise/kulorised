@@ -3,14 +3,14 @@ package net.mangolise.kulorised;
 import dev.emortal.nbstom.NBS;
 import dev.emortal.nbstom.NBSSong;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.advancements.FrameType;
-import net.minestom.server.advancements.notifications.Notification;
-import net.minestom.server.advancements.notifications.NotificationCenter;
+import net.minestom.server.advancements.Notification;
 import net.minestom.server.adventure.audience.Audiences;
 import net.minestom.server.command.CommandSender;
 import net.minestom.server.command.ConsoleSender;
@@ -138,7 +138,7 @@ public class Util {
                 type,
                 ItemStack.of(icon)
         );
-        NotificationCenter.send(notification, player);
+        player.sendNotification(notification);
     }
 
     public static void sendNotification(Set<Player> players, String text, NamedTextColor colour, FrameType type, Material icon) {
@@ -147,7 +147,9 @@ public class Util {
                 type,
                 ItemStack.of(icon)
         );
-        NotificationCenter.send(notification, players);
+        for (Player player : players) {
+            player.sendNotification(notification);
+        }
     }
 
     public static void broadcast(Component msg) {
