@@ -6,14 +6,14 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.minestom.server.component.DataComponents;
 import net.minestom.server.event.inventory.InventoryClickEvent;
-import net.minestom.server.inventory.AbstractInventory;
 import net.minestom.server.inventory.Inventory;
 import net.minestom.server.inventory.InventoryType;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
+import net.minestom.server.item.component.TooltipDisplay;
 
-import javax.xml.stream.EventFilter;
 import java.util.Arrays;
+import java.util.Set;
 
 public class MusicPlayerInventory {
 
@@ -34,6 +34,7 @@ public class MusicPlayerInventory {
 
             itemStacks[i] = ItemStack.builder(disc.getMaterial())
                     .set(DataComponents.ITEM_NAME, Component.text(disc.getDescription(), NamedTextColor.AQUA))
+                    .set(DataComponents.TOOLTIP_DISPLAY, new TooltipDisplay(true, Set.of()))
                     .build();
 
             i++;
