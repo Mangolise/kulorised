@@ -1,8 +1,8 @@
 package net.mangolise.kulorised.blocks;
 
+import net.kyori.adventure.key.Key;
 import net.minestom.server.instance.block.BlockHandler;
 import net.minestom.server.tag.Tag;
-import net.minestom.server.utils.NamespaceID;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -12,8 +12,8 @@ public enum SignBlock implements BlockHandler {
     INSTANCE;
 
     @Override
-    public @NotNull NamespaceID getNamespaceId() {
-        return NamespaceID.from("minecraft:sign");
+    public @NotNull Key getKey() {
+        return Key.key("minecraft:sign");
     }
 
     @Override

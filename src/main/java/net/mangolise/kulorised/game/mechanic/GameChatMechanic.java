@@ -15,7 +15,7 @@ public class GameChatMechanic implements Mechanic {
 
             ColoriseGame game = context.game();
 
-            Component message = Util.formatMessage("GAME", e.getPlayer(), e.getMessage());
+            Component message = Util.formatMessage("GAME", e.getPlayer(), e.getRawMessage());
             for (Player p : game.players()) {
                 p.sendMessage(message);
             }

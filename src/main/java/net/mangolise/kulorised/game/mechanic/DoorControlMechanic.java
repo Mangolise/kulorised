@@ -5,10 +5,10 @@ import net.minestom.server.entity.Player;
 import net.minestom.server.event.player.PlayerBlockInteractEvent;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.network.packet.server.play.BlockChangePacket;
-import net.minestom.server.utils.PacketUtils;
 import net.mangolise.kulorised.BlockAnalysis;
 import net.mangolise.kulorised.Util;
 import net.mangolise.kulorised.game.GameInstance;
+import net.minestom.server.utils.PacketSendingUtils;
 
 import java.util.Map;
 import java.util.Set;
@@ -69,18 +69,18 @@ public class DoorControlMechanic implements Mechanic {
                     toggled.remove(togglePosition);
                 }
 
-                PacketUtils.sendGroupedPacket(game.getPlayers(), new BlockChangePacket(togglePosition, newBlock));
+                PacketSendingUtils.sendGroupedPacket(game.getPlayers(), new BlockChangePacket(togglePosition, newBlock));
             }
             if (toggled.contains(event.getBlockPosition())) { // Lever itself
                 toggled.remove(event.getBlockPosition());
                 Block newBlock = event.getBlock().withProperty("powered", "false");
                 BlockChangePacket packet = new BlockChangePacket(event.getBlockPosition(), newBlock);
-                PacketUtils.sendGroupedPacket(game.getPlayers(), packet);
+                PacketSendingUtils.sendGroupedPacket(game.getPlayers(), packet);
             } else {
                 toggled.add(event.getBlockPosition());
                 Block newBlock = event.getBlock().withProperty("powered", "true");
                 BlockChangePacket packet = new BlockChangePacket(event.getBlockPosition(), newBlock);
-                PacketUtils.sendGroupedPacket(game.getPlayers(), packet);
+                PacketSendingUtils.sendGroupedPacket(game.getPlayers(), packet);
             }
 
             game.setTag(GameInstance.TOGGLED_BLOCKS, toggled);
