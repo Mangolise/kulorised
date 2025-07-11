@@ -18,7 +18,7 @@ repositories {
 }
 
 dependencies {
-    implementation("net.minestom:minestom:2025.07.03-1.21.5")
+    implementation("net.minestom:minestom:2025.07.10b-1.21.7")
     implementation("net.mangolise:mango-game-sdk:latest")
 
     // https://mvnrepository.com/artifact/ch.qos.logback/logback-classic

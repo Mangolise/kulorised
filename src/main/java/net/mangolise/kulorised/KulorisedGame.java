@@ -33,7 +33,7 @@ import net.minestom.server.event.server.ServerListPingEvent;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
-import net.minestom.server.ping.ResponseData;
+import net.minestom.server.ping.Status;
 import net.minestom.server.scoreboard.Team;
 import net.minestom.server.scoreboard.TeamManager;
 import net.minestom.server.sound.SoundEvent;
@@ -144,23 +144,19 @@ public class KulorisedGame extends BaseGame<KulorisedConfig> {
         }
 
         globalEventHandler.addListener(ServerListPingEvent.class, event -> {
-            ResponseData data = event.getResponseData();
+            Status status = event.getStatus();
 
             // Title colour cycles based on system time so it is random
             float randomHue = (System.currentTimeMillis() % 10000) / 10000f;
             TextColor titleColor = TextColor.color(HSVLike.hsvLike(randomHue, 0.8f, 0.8f));
 
-            data.setDescription(Component
-                    .text("Kulorised")
-                    .color(titleColor)
-                    .append(Component.text(" - A game of colors")
-                            .color(TextColor.fromHexString("#a1a1a1")))
-                    .append(Component
-                            .text("\nby CoPokBl, Calcilore, EclipsedMango, Krystilize")
-                            .color(TextColor.fromHexString("#a1a1a1"))));
+            status = Status.builder(status).description(
+                Component.text("Kulorised").color(titleColor)
+                .append(Component.text(" - A game of colors").color(TextColor.fromHexString("#a1a1a1")))
+                .append(Component.text("\nby CoPokBl, Calcilore, EclipsedMango, Krystilize").color(TextColor.fromHexString("#a1a1a1")))
+            ).playerInfo(0, 6969).build();
 
-            data.setMaxPlayer(6969);
-            event.setResponseData(data);
+            event.setStatus(status);
         });
 
         LeaderboardManager.setup();
